@@ -489,6 +489,7 @@ class Component extends DCLogic {
 
   startSync() {
     this.unsub = window.__shiftSyncDb.subscribe((data) => {
+      console.log('[shiftSync] snapshot received', data);
       if (!data) return;
       this.applyingRemote = true;
       this.setState({
@@ -498,16 +499,25 @@ class Component extends DCLogic {
         notifPrefs: data.notifPrefs || this.state.notifPrefs,
         adminPasscode: data.adminPasscode || '1111',
         passcodeIsDefault: data.passcodeIsDefault !== undefined ? data.passcodeIsDefault : true,
-      }, () => { this.applyingRemote = false; });
+      }, () => { this.applyingRemote = false; console.log('[shiftSync] applied remote, people=', this.state.people); });
+    });
+  }
+
+  pushToRemote() {
+    if (!window.__shiftSyncDb) { this.pendingSave = true; return; }
+    this.pendingSave = false;
+    window.__shiftSyncDb.save({
+      people: this.state.people, shifts: this.state.shifts, pendingChanges: this.state.pendingChanges,
+      notifPrefs: this.state.notifPrefs, adminPasscode: this.state.adminPasscode, passcodeIsDefault: this.state.passcodeIsDefault,
     });
   }
 
   componentDidMount() {
-    console.log('[shiftSync] componentDidMount, dbReady=', !!window.__shiftSyncDb, 'loading=', !!window.__shiftSyncLoading);
+    this.pendingSave = false;
     if (window.__shiftSyncDb) { this.startSync(); return; }
     window.addEventListener('shift-sync-db-ready', () => {
-      console.log('[shiftSync] got ready event');
       this.startSync();
+      if (this.pendingSave) this.pushToRemote();
     }, { once: true });
     if (window.__shiftSyncLoading) return;
     window.__shiftSyncLoading = true;
@@ -521,7 +531,6 @@ class Component extends DCLogic {
       appId: "1:920076372055:web:447eb3ce894e780fe0bb12",
     };
     const setup = () => {
-      console.log('[shiftSync] setup() running');
       try {
         if (!(window.firebase.apps && window.firebase.apps.length)) window.firebase.initializeApp(firebaseConfig);
         const circleRef = window.firebase.firestore().collection('circles').doc('family');
@@ -529,7 +538,6 @@ class Component extends DCLogic {
           subscribe: (cb) => circleRef.onSnapshot((snap) => cb(snap.exists ? snap.data() : null), (err) => console.error('[shiftSync] subscribe error', err)),
           save: (data) => circleRef.set(data, { merge: true }).catch((err) => console.error('[shiftSync] save error', err)),
         };
-        console.log('[shiftSync] dispatching ready event');
         window.dispatchEvent(new Event('shift-sync-db-ready'));
       } catch (err) {
         console.error('[shiftSync] setup threw', err);
@@ -540,26 +548,20 @@ class Component extends DCLogic {
     s1.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js';
     s1.onerror = () => console.error('[shiftSync] s1 failed to load');
     s1.onload = () => {
-      console.log('[shiftSync] s1 loaded');
       const s2 = document.createElement('script');
       s2.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js';
       s2.onerror = () => console.error('[shiftSync] s2 failed to load');
-      s2.onload = () => { console.log('[shiftSync] s2 loaded'); setup(); };
+      s2.onload = setup;
       document.head.appendChild(s2);
     };
     document.head.appendChild(s1);
   }
   componentWillUnmount() { if (this.unsub) this.unsub(); }
   componentDidUpdate(prevProps, prevState) {
-    if (this.applyingRemote || !window.__shiftSyncDb || !prevState) return;
+    if (this.applyingRemote || !prevState) return;
     const keys = ['people', 'shifts', 'pendingChanges', 'notifPrefs', 'adminPasscode', 'passcodeIsDefault'];
     const changed = keys.some(k => JSON.stringify(prevState[k]) !== JSON.stringify(this.state[k]));
-    if (changed) {
-      window.__shiftSyncDb.save({
-        people: this.state.people, shifts: this.state.shifts, pendingChanges: this.state.pendingChanges,
-        notifPrefs: this.state.notifPrefs, adminPasscode: this.state.adminPasscode, passcodeIsDefault: this.state.passcodeIsDefault,
-      });
-    }
+    if (changed) this.pushToRemote();
   }
 
   iso(d) { const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${day}`; }
