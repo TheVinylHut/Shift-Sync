@@ -538,7 +538,7 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { if (this.unsub) this.unsub(); }
   componentDidUpdate(prevProps, prevState) {
-    if (this.applyingRemote || !window.__shiftSyncDb) return;
+    if (this.applyingRemote || !window.__shiftSyncDb || !prevState) return;
     const keys = ['people', 'shifts', 'pendingChanges', 'notifPrefs', 'adminPasscode', 'passcodeIsDefault'];
     const changed = keys.some(k => JSON.stringify(prevState[k]) !== JSON.stringify(this.state[k]));
     if (changed) {
