@@ -502,8 +502,16 @@ class Component extends DCLogic {
     });
   }
 
-  initFirebase = () => {
+  componentDidMount() {
+    console.log('[shiftSync] componentDidMount, dbReady=', !!window.__shiftSyncDb, 'loading=', !!window.__shiftSyncLoading);
     if (window.__shiftSyncDb) { this.startSync(); return; }
+    window.addEventListener('shift-sync-db-ready', () => {
+      console.log('[shiftSync] got ready event');
+      this.startSync();
+    }, { once: true });
+    if (window.__shiftSyncLoading) return;
+    window.__shiftSyncLoading = true;
+
     const firebaseConfig = {
       apiKey: "AIzaSyClHM9tabBu72qRg0yCy1uLvF4Lgea2FBo",
       authDomain: "shift-sync-14e93.firebaseapp.com",
@@ -513,28 +521,33 @@ class Component extends DCLogic {
       appId: "1:920076372055:web:447eb3ce894e780fe0bb12",
     };
     const setup = () => {
-      if (!(window.firebase.apps && window.firebase.apps.length)) window.firebase.initializeApp(firebaseConfig);
-      const circleRef = window.firebase.firestore().collection('circles').doc('family');
-      window.__shiftSyncDb = {
-        subscribe: (cb) => circleRef.onSnapshot((snap) => cb(snap.exists ? snap.data() : null)),
-        save: (data) => circleRef.set(data, { merge: true }),
-      };
-      this.startSync();
+      console.log('[shiftSync] setup() running');
+      try {
+        if (!(window.firebase.apps && window.firebase.apps.length)) window.firebase.initializeApp(firebaseConfig);
+        const circleRef = window.firebase.firestore().collection('circles').doc('family');
+        window.__shiftSyncDb = {
+          subscribe: (cb) => circleRef.onSnapshot((snap) => cb(snap.exists ? snap.data() : null), (err) => console.error('[shiftSync] subscribe error', err)),
+          save: (data) => circleRef.set(data, { merge: true }).catch((err) => console.error('[shiftSync] save error', err)),
+        };
+        console.log('[shiftSync] dispatching ready event');
+        window.dispatchEvent(new Event('shift-sync-db-ready'));
+      } catch (err) {
+        console.error('[shiftSync] setup threw', err);
+      }
     };
     if (window.firebase && window.firebase.firestore) { setup(); return; }
     const s1 = document.createElement('script');
     s1.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js';
+    s1.onerror = () => console.error('[shiftSync] s1 failed to load');
     s1.onload = () => {
+      console.log('[shiftSync] s1 loaded');
       const s2 = document.createElement('script');
       s2.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js';
-      s2.onload = setup;
+      s2.onerror = () => console.error('[shiftSync] s2 failed to load');
+      s2.onload = () => { console.log('[shiftSync] s2 loaded'); setup(); };
       document.head.appendChild(s2);
     };
     document.head.appendChild(s1);
-  };
-
-  componentDidMount() {
-    this.initFirebase();
   }
   componentWillUnmount() { if (this.unsub) this.unsub(); }
   componentDidUpdate(prevProps, prevState) {
