@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    body { margin: 0; }
+    * { box-sizing: border-box; font-family: 'Nunito', sans-serif; }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script>
+    var firebaseConfig = {
+      apiKey: "AIzaSyClHM9tabBu72qRg0yCy1uLvF4Lgea2FBo",
+      authDomain: "shift-sync-14e93.firebaseapp.com",
+      projectId: "shift-sync-14e93",
+      storageBucket: "shift-sync-14e93.firebasestorage.app",
+      messagingSenderId: "920076372055",
+      appId: "1:920076372055:web:447eb3ce894e780fe0bb12"
+    };
+    firebase.initializeApp(firebaseConfig);
+    var circleRef = firebase.firestore().collection('circles').doc('family');
+    window.__shiftSyncDb = {
+      subscribe: function (cb) {
+        return circleRef.onSnapshot(function (snap) { cb(snap.exists ? snap.data() : null); });
+      },
+      save: function (data) {
+        return circleRef.set(data, { merge: true });
+      }
+    };
+    window.dispatchEvent(new Event('shift-sync-db-ready'));
+  </script>
+</helmet>
+
+<template id="__bundler_thumbnail" data-bg-color="#efe9e2">
+  <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <rect x="55" y="50" width="90" height="86" rx="14" fill="#fff" stroke="#b5502e" stroke-width="6"/>
+    <rect x="55" y="50" width="90" height="24" rx="10" fill="#b5502e"/>
+    <circle cx="80" cy="62" r="4" fill="#fff"/>
+    <circle cx="120" cy="62" r="4" fill="#fff"/>
+    <circle cx="122" cy="118" r="9" fill="#7a8f5e"/>
+  </svg>
+</template>
+
+<div style="min-height: 100vh; width: 100%; background: oklch(93% 0.014 70); display: flex; justify-content: center; padding: 28px 12px; color: oklch(22% 0.02 50);">
+  <div style="width: 100%; max-width: 430px; background: oklch(99% 0.005 70); border-radius: 28px; box-shadow: 0 20px 50px -20px oklch(30% 0.03 50 / 0.35); overflow: hidden; display: flex; flex-direction: column; min-height: 780px; position: relative;">
+
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 22px 16px; border-bottom: 1px solid oklch(90% 0.015 60);">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="width: 26px; height: 24px; border-radius: 7px; background: white; border: 2px solid oklch(58% 0.15 35); overflow: hidden; position: relative; flex-shrink: 0;">
+          <div style="height: 7px; background: oklch(58% 0.15 35); display: flex; align-items: center; justify-content: center; gap: 3px;">
+            <div style="width: 2px; height: 2px; border-radius: 50%; background: white;"></div>
+            <div style="width: 2px; height: 2px; border-radius: 50%; background: white;"></div>
+          </div>
+          <div style="position: absolute; right: 4px; bottom: 4px; width: 5px; height: 5px; border-radius: 50%; background: oklch(56% 0.09 150);"></div>
+        </div>
+        <div style="font-size: 19px; font-weight: 800;">Shift Sync</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="{{ roleBadgeStyle }}">{{ roleLabel }}</div>
+        <sc-if value="{{ showAdminSignIn }}" hint-placeholder-val="{{ true }}">
+          <button onClick="{{ onOpenAdminPrompt }}" style="border: none; background: none; color: oklch(70% 0.015 60); font-size: 11px; font-weight: 600; cursor: pointer; padding: 2px;">Admin sign-in</button>
+        </sc-if>
+      </div>
+    </div>
+
+    <sc-if value="{{ showApprovalToast }}" hint-placeholder-val="{{ false }}">
+      <div style="background: oklch(93% 0.05 40); color: oklch(45% 0.13 35); font-size: 13px; font-weight: 700; text-align: center; padding: 10px;">{{ approvalToastText }}</div>
+    </sc-if>
+
+    <div style="flex: 1; overflow-y: auto; padding: 18px 20px 90px;">
+
+      <sc-if value="{{ tabIsSchedule }}" hint-placeholder-val="{{ true }}">
+        <sc-if value="{{ noShiftPeople }}" hint-placeholder-val="{{ true }}">
+          <div style="text-align: center; padding: 60px 16px; color: oklch(48% 0.02 60);">
+            <div style="font-weight: 800; font-size: 16px; color: oklch(22% 0.02 50); margin-bottom: 8px;">No one's on the schedule yet</div>
+            <div style="font-size: 14px; line-height: 1.5;">Add whoever works shifts (starting with yourself) in the People tab.</div>
+            <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ goPeople }}" style="margin-top: 16px; padding: 12px 20px; font-size: 14px; font-weight: 700; color: white; background: oklch(58% 0.15 35); border: none; border-radius: 12px; cursor: pointer;">Go to People</button>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasShiftPeople }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; background: oklch(95% 0.02 60); border-radius: 12px; padding: 4px; gap: 4px; margin-bottom: 16px;">
+            <button onClick="{{ setViewDay }}" style="{{ dayTabStyle }}">Day</button>
+            <button onClick="{{ setViewWeek }}" style="{{ weekTabStyle }}">Week</button>
+            <button onClick="{{ setViewMonth }}" style="{{ monthTabStyle }}">Month</button>
+          </div>
+
+          <div style="display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap;">
+            <sc-for list="{{ personChips }}" as="chip" hint-placeholder-count="3">
+              <button onClick="{{ chip.onClick }}" style="{{ chip.style }}">
+                <sc-if value="{{ chip.showDot }}" hint-placeholder-val="{{ false }}">
+                  <span style="{{ chip.dotStyle }}"></span>
+                </sc-if>
+                {{ chip.label }}
+              </button>
+            </sc-for>
+          </div>
+
+          <sc-if value="{{ viewIsDay }}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+              <button onClick="{{ prevDay }}" style="border: none; background: oklch(95% 0.02 60); border-radius: 10px; width: 36px; height: 36px; font-size: 16px; font-weight: 700; cursor: pointer;">‹</button>
+              <div style="text-align: center;">
+                <div style="font-weight: 700; font-size: 15px;">{{ dayLabel }}</div>
+                <button onClick="{{ todayDay }}" style="border: none; background: none; color: oklch(58% 0.15 35); font-size: 12px; font-weight: 700; cursor: pointer; padding: 2px;">Today</button>
+              </div>
+              <button onClick="{{ nextDay }}" style="border: none; background: oklch(95% 0.02 60); border-radius: 10px; width: 36px; height: 36px; font-size: 16px; font-weight: 700; cursor: pointer;">›</button>
+            </div>
+
+            <sc-if value="{{ dayShiftsEmpty }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align: center; padding: 40px 10px; color: oklch(55% 0.02 60); font-size: 14px;">No shifts scheduled.</div>
+            </sc-if>
+            <sc-for list="{{ dayShifts }}" as="shift" hint-placeholder-count="2">
+              <div style="{{ shift.cardStyle }}">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <div style="font-weight: 800; font-size: 15px;">{{ shift.personName }}</div>
+                  <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60);">{{ shift.hoursText }}</div>
+                </div>
+                <div style="font-size: 14px; color: oklch(48% 0.02 60); margin-top: 2px;">{{ shift.roleText }}</div>
+                <div style="font-size: 15px; font-weight: 700; margin-top: 6px;">{{ shift.timeText }}</div>
+                <sc-if value="{{ shift.hasNotes }}" hint-placeholder-val="{{ false }}">
+                  <div style="font-size: 13px; color: oklch(48% 0.02 60); margin-top: 4px; font-style: italic;">{{ shift.notes }}</div>
+                </sc-if>
+                <sc-if value="{{ shift.canEdit }}" hint-placeholder-val="{{ false }}">
+                  <div style="display: flex; gap: 8px; margin-top: 10px;">
+                    <button onClick="{{ shift.onEdit }}" style="flex: 1; padding: 8px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid oklch(88% 0.015 60); background: white; cursor: pointer;">Edit</button>
+                    <button onClick="{{ shift.onDelete }}" style="flex: 1; padding: 8px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid oklch(88% 0.015 60); background: white; color: oklch(55% 0.16 25); cursor: pointer;">Delete</button>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </sc-if>
+
+          <sc-if value="{{ viewIsWeek }}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+              <button onClick="{{ prevWeek }}" style="border: none; background: oklch(95% 0.02 60); border-radius: 10px; width: 36px; height: 36px; font-size: 16px; font-weight: 700; cursor: pointer;">‹</button>
+              <div style="text-align: center;">
+                <div style="font-weight: 700; font-size: 15px;">{{ weekRangeLabel }}</div>
+                <button onClick="{{ thisWeek }}" style="border: none; background: none; color: oklch(58% 0.15 35); font-size: 12px; font-weight: 700; cursor: pointer; padding: 2px;">This week</button>
+              </div>
+              <button onClick="{{ nextWeek }}" style="border: none; background: oklch(95% 0.02 60); border-radius: 10px; width: 36px; height: 36px; font-size: 16px; font-weight: 700; cursor: pointer;">›</button>
+            </div>
+
+            <sc-for list="{{ weekDays }}" as="day" hint-placeholder-count="7">
+              <div style="margin-bottom: 16px;">
+                <div style="{{ day.headerStyle }}">{{ day.label }}</div>
+                <sc-if value="{{ day.empty }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding: 10px 2px; color: oklch(58% 0.02 60); font-size: 13px;">No shifts</div>
+                </sc-if>
+                <sc-for list="{{ day.shifts }}" as="shift" hint-placeholder-count="1">
+                  <div style="{{ shift.cardStyle }}">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                      <div style="font-weight: 800; font-size: 14px;">{{ shift.personName }}</div>
+                      <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60);">{{ shift.hoursText }}</div>
+                    </div>
+                    <div style="font-size: 13px; color: oklch(48% 0.02 60);">{{ shift.roleText }}</div>
+                    <div style="font-size: 14px; font-weight: 700; margin-top: 4px;">{{ shift.timeText }}</div>
+                    <sc-if value="{{ shift.canEdit }}" hint-placeholder-val="{{ false }}">
+                      <div style="display: flex; gap: 8px; margin-top: 8px;">
+                        <button onClick="{{ shift.onEdit }}" style="flex: 1; padding: 7px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid oklch(88% 0.015 60); background: white; cursor: pointer;">Edit</button>
+                        <button onClick="{{ shift.onDelete }}" style="flex: 1; padding: 7px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid oklch(88% 0.015 60); background: white; color: oklch(55% 0.16 25); cursor: pointer;">Delete</button>
+                      </div>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-for>
+          </sc-if>
+
+          <sc-if value="{{ viewIsMonth }}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+              <button onClick="{{ prevMonth }}" style="border: none; background: oklch(95% 0.02 60); border-radius: 10px; width: 36px; height: 36px; font-size: 16px; font-weight: 700; cursor: pointer;">‹</button>
+              <div style="text-align: center;">
+                <div style="font-weight: 700; font-size: 15px;">{{ monthLabel }}</div>
+                <button onClick="{{ thisMonth }}" style="border: none; background: none; color: oklch(58% 0.15 35); font-size: 12px; font-weight: 700; cursor: pointer; padding: 2px;">Today</button>
+              </div>
+              <button onClick="{{ nextMonth }}" style="border: none; background: oklch(95% 0.02 60); border-radius: 10px; width: 36px; height: 36px; font-size: 16px; font-weight: 700; cursor: pointer;">›</button>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 6px;">
+              <sc-for list="{{ weekdayLabels }}" as="wd" hint-placeholder-count="7">
+                <div style="text-align: center; font-size: 11px; font-weight: 700; color: oklch(55% 0.02 60);">{{ wd }}</div>
+              </sc-for>
+            </div>
+
+            <sc-for list="{{ monthWeeks }}" as="week" hint-placeholder-count="6">
+              <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 4px;">
+                <sc-for list="{{ week }}" as="cell" hint-placeholder-count="7">
+                  <button onClick="{{ cell.onClick }}" style="{{ cell.style }}">
+                    <span>{{ cell.dayNum }}</span>
+                    <span style="display: flex; gap: 2px; margin-top: 2px; height: 5px;">
+                      <sc-for list="{{ cell.dotColors }}" as="dot" hint-placeholder-count="0">
+                        <span style="{{ dot.style }}"></span>
+                      </sc-for>
+                    </span>
+                  </button>
+                </sc-for>
+              </div>
+            </sc-for>
+
+            <div style="margin-top: 18px; border-top: 1px solid oklch(90% 0.015 60); padding-top: 14px;">
+              <div style="font-weight: 700; font-size: 14px; margin-bottom: 10px;">{{ selectedDayLabel }}</div>
+              <sc-if value="{{ selectedDayEmpty }}" hint-placeholder-val="{{ false }}">
+                <div style="color: oklch(55% 0.02 60); font-size: 13px;">No shifts scheduled.</div>
+              </sc-if>
+              <sc-for list="{{ selectedDayShifts }}" as="shift" hint-placeholder-count="1">
+                <div style="{{ shift.cardStyle }}">
+                  <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div style="font-weight: 800; font-size: 14px;">{{ shift.personName }}</div>
+                    <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60);">{{ shift.hoursText }}</div>
+                  </div>
+                  <div style="font-size: 13px; color: oklch(48% 0.02 60);">{{ shift.roleText }}</div>
+                  <div style="font-size: 14px; font-weight: 700; margin-top: 4px;">{{ shift.timeText }}</div>
+                  <sc-if value="{{ shift.canEdit }}" hint-placeholder-val="{{ false }}">
+                    <div style="display: flex; gap: 8px; margin-top: 8px;">
+                      <button onClick="{{ shift.onEdit }}" style="flex: 1; padding: 7px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid oklch(88% 0.015 60); background: white; cursor: pointer;">Edit</button>
+                      <button onClick="{{ shift.onDelete }}" style="flex: 1; padding: 7px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid oklch(88% 0.015 60); background: white; color: oklch(55% 0.16 25); cursor: pointer;">Delete</button>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </sc-if>
+      </sc-if>
+
+      <sc-if value="{{ tabIsPeople }}" hint-placeholder-val="{{ false }}">
+        <div style="font-weight: 800; font-size: 18px; margin-bottom: 4px;">Who's in the circle</div>
+        <div style="font-size: 13px; color: oklch(48% 0.02 60); margin-bottom: 16px;">Admins can add and edit shifts. Everyone else can just view.</div>
+
+        <sc-if value="{{ showApprovals }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-bottom: 18px;">
+            <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Waiting for your approval</div>
+            <sc-for list="{{ pendingChanges }}" as="change" hint-placeholder-count="0">
+              <div style="padding: 12px 14px; background: oklch(93% 0.05 40); border-radius: 12px; margin-bottom: 8px;">
+                <div style="font-size: 13px; font-weight: 700; margin-bottom: 8px;">{{ change.summary }}</div>
+                <div style="display: flex; gap: 8px;">
+                  <button onClick="{{ change.onApprove }}" style="flex: 1; padding: 9px; font-size: 12px; font-weight: 700; border-radius: 8px; border: none; background: oklch(58% 0.15 35); color: white; cursor: pointer;">Approve</button>
+                  <button onClick="{{ change.onDecline }}" style="flex: 1; padding: 9px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid oklch(88% 0.015 60); background: white; cursor: pointer;">Decline</button>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-for list="{{ people }}" as="person" hint-placeholder-count="3">
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: oklch(97% 0.01 70); border-radius: 12px; margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="{{ person.dotStyle }}"></span>
+              <div>
+                <div style="font-weight: 700; font-size: 14px;">{{ person.name }}</div>
+                <div style="font-size: 12px; color: oklch(48% 0.02 60);">{{ person.summaryLabel }}</div>
+              </div>
+            </div>
+            <div style="display: flex; gap: 12px; align-items: center;">
+              <button onClick="{{ person.onEdit }}" style="border: none; background: none; color: oklch(58% 0.15 35); font-size: 12px; font-weight: 700; cursor: pointer;">Edit</button>
+              <sc-if value="{{ person.canRemove }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ person.onRemove }}" style="border: none; background: none; color: oklch(55% 0.16 25); font-size: 12px; font-weight: 700; cursor: pointer;">Remove</button>
+              </sc-if>
+            </div>
+          </div>
+        </sc-for>
+
+        <button onClick="{{ openAddPerson }}" style="width: 100%; margin-top: 8px; padding: 14px; font-size: 14px; font-weight: 700; color: white; background: oklch(58% 0.15 35); border: none; border-radius: 12px; cursor: pointer;">+ Add a person</button>
+      </sc-if>
+
+      <sc-if value="{{ tabIsSettings }}" hint-placeholder-val="{{ false }}">
+        <div style="font-weight: 800; font-size: 18px; margin-bottom: 16px;">Settings</div>
+
+        <div style="margin-bottom: 24px;">
+          <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Notifications</div>
+          <sc-for list="{{ notifItems }}" as="notif" hint-placeholder-count="3">
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 4px; border-bottom: 1px solid oklch(92% 0.015 60);">
+              <div>
+                <div style="font-weight: 700; font-size: 14px;">{{ notif.label }}</div>
+                <div style="font-size: 12px; color: oklch(48% 0.02 60);">{{ notif.desc }}</div>
+              </div>
+              <div onClick="{{ notif.onToggle }}" style="{{ notif.trackStyle }}">
+                <div style="{{ notif.thumbStyle }}"></div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ onLogout }}" style="width: 100%; padding: 13px; font-size: 14px; font-weight: 700; color: oklch(48% 0.02 60); background: oklch(95% 0.02 60); border: none; border-radius: 10px; cursor: pointer;">Sign out of admin</button>
+        </sc-if>
+      </sc-if>
+    </div>
+
+    <sc-if value="{{ showAddButton }}" hint-placeholder-val="{{ false }}">
+      <button onClick="{{ openAddShift }}" style="position: absolute; right: 20px; bottom: 88px; width: 56px; height: 56px; border-radius: 50%; background: oklch(58% 0.15 35); color: white; border: none; font-size: 26px; font-weight: 700; cursor: pointer; box-shadow: 0 10px 24px -8px oklch(40% 0.1 40 / 0.6); display: flex; align-items: center; justify-content: center;">+</button>
+    </sc-if>
+
+    <div style="position: sticky; bottom: 0; display: flex; border-top: 1px solid oklch(90% 0.015 60); background: oklch(99% 0.005 70);">
+      <button onClick="{{ goSchedule }}" style="{{ navScheduleStyle }}">Schedule</button>
+      <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ goPeople }}" style="{{ navPeopleStyle }}">People</button>
+      </sc-if>
+      <button onClick="{{ goSettings }}" style="{{ navSettingsStyle }}">Settings</button>
+    </div>
+
+    <sc-if value="{{ showShiftForm }}" hint-placeholder-val="{{ false }}">
+      <div style="position: absolute; inset: 0; background: oklch(20% 0.02 50 / 0.45); display: flex; align-items: flex-end; z-index: 10;">
+        <div style="background: white; width: 100%; border-radius: 22px 22px 0 0; padding: 22px 22px 26px; max-height: 88%; overflow-y: auto;">
+          <div style="font-weight: 800; font-size: 17px; margin-bottom: 16px;">{{ formTitle }}</div>
+
+          <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Who</div>
+          <div style="display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap;">
+            <sc-for list="{{ formPersonOptions }}" as="opt" hint-placeholder-count="2">
+              <button onClick="{{ opt.onClick }}" style="{{ opt.style }}">{{ opt.name }}</button>
+            </sc-for>
+          </div>
+
+          <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Date</div>
+          <input type="date" value="{{ formDate }}" onChange="{{ onFormDateChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 14px; color: oklch(22% 0.02 50);" />
+
+          <div style="display: flex; gap: 10px; margin-bottom: 14px;">
+            <div style="flex: 1;">
+              <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Starts</div>
+              <input type="time" value="{{ formStart }}" onChange="{{ onFormStartChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); color: oklch(22% 0.02 50);" />
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Ends</div>
+              <input type="time" value="{{ formEnd }}" onChange="{{ onFormEndChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); color: oklch(22% 0.02 50);" />
+            </div>
+          </div>
+
+          <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Role / station</div>
+          <input type="text" placeholder="e.g. Baker, Counter Staff" value="{{ formRole }}" onChange="{{ onFormRoleChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 14px; color: oklch(22% 0.02 50);" />
+
+          <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Notes (optional)</div>
+          <input type="text" placeholder="e.g. picking up early" value="{{ formNotes }}" onChange="{{ onFormNotesChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 18px; color: oklch(22% 0.02 50);" />
+
+          <div style="display: flex; gap: 10px;">
+            <button onClick="{{ closeForm }}" style="flex: 1; padding: 14px; font-size: 14px; font-weight: 700; border-radius: 12px; border: 2px solid oklch(88% 0.015 60); background: white; cursor: pointer;">Cancel</button>
+            <button onClick="{{ saveShift }}" style="flex: 2; padding: 14px; font-size: 14px; font-weight: 700; color: white; background: oklch(58% 0.15 35); border: none; border-radius: 12px; cursor: pointer;">{{ saveShiftLabel }}</button>
+          </div>
+          <sc-if value="{{ isEditingShift }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ deleteShiftFromForm }}" style="width: 100%; margin-top: 10px; padding: 10px; font-size: 13px; font-weight: 700; color: oklch(55% 0.16 25); background: none; border: none; cursor: pointer;">{{ deleteShiftLabel }}</button>
+          </sc-if>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showPersonForm }}" hint-placeholder-val="{{ false }}">
+      <div style="position: absolute; inset: 0; background: oklch(20% 0.02 50 / 0.45); display: flex; align-items: flex-end; z-index: 10;">
+        <div style="background: white; width: 100%; border-radius: 22px 22px 0 0; padding: 22px 22px 26px;">
+          <div style="font-weight: 800; font-size: 17px; margin-bottom: 16px;">{{ personFormTitle }}</div>
+
+          <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Name</div>
+          <input type="text" placeholder="e.g. Mom" value="{{ personFormName }}" onChange="{{ onPersonFormNameChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 14px; color: oklch(22% 0.02 50);" />
+
+          <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Access</div>
+          <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+            <button onClick="{{ setPersonFormAccessViewer }}" style="{{ personFormAccessViewerStyle }}">Can view only</button>
+            <button onClick="{{ setPersonFormAccessAdmin }}" style="{{ personFormAccessAdminStyle }}">Can edit too</button>
+          </div>
+
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 2px; margin-bottom: 18px;">
+            <div>
+              <div style="font-weight: 700; font-size: 14px;">Works shifts</div>
+              <div style="font-size: 12px; color: oklch(48% 0.02 60);">Shows up on the calendar</div>
+            </div>
+            <div onClick="{{ togglePersonFormCanShift }}" style="{{ personFormCanShiftTrackStyle }}">
+              <div style="{{ personFormCanShiftThumbStyle }}"></div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px;">
+            <button onClick="{{ closePersonForm }}" style="flex: 1; padding: 14px; font-size: 14px; font-weight: 700; border-radius: 12px; border: 2px solid oklch(88% 0.015 60); background: white; cursor: pointer;">Cancel</button>
+            <button onClick="{{ savePersonForm }}" style="flex: 2; padding: 14px; font-size: 14px; font-weight: 700; color: white; background: oklch(58% 0.15 35); border: none; border-radius: 12px; cursor: pointer;">Save</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ authStepIsPasscode }}" hint-placeholder-val="{{ false }}">
+      <div style="position: absolute; inset: 0; background: oklch(20% 0.02 50 / 0.45); display: flex; align-items: center; justify-content: center; z-index: 20; padding: 24px;">
+        <div style="background: white; border-radius: 18px; padding: 24px; width: 100%;">
+          <div style="font-weight: 800; font-size: 16px; margin-bottom: 4px;">Admin sign-in</div>
+          <div style="font-size: 13px; color: oklch(48% 0.02 60); margin-bottom: 14px;">Enter your admin passcode to manage shifts and people.</div>
+          <input type="password" placeholder="Passcode" value="{{ adminCodeValue }}" onChange="{{ onAdminCodeChange }}" style="width: 100%; padding: 13px 14px; font-size: 16px; border-radius: 12px; border: 2px solid oklch(88% 0.015 60); text-align: center; letter-spacing: 2px; font-weight: 700; color: oklch(22% 0.02 50); margin-bottom: 10px;" />
+          <sc-if value="{{ adminCodeError }}" hint-placeholder-val="{{ false }}">
+            <div style="color: oklch(55% 0.16 25); font-size: 13px; font-weight: 700; margin-bottom: 10px;">That passcode isn't right.</div>
+          </sc-if>
+          <div style="display: flex; gap: 10px;">
+            <button onClick="{{ onCloseAdminPrompt }}" style="flex: 1; padding: 13px; font-size: 14px; font-weight: 700; border-radius: 12px; border: 2px solid oklch(88% 0.015 60); background: white; cursor: pointer;">Cancel</button>
+            <button onClick="{{ onSubmitAdminCode }}" style="flex: 2; padding: 13px; font-size: 14px; font-weight: 700; color: white; background: oklch(58% 0.15 35); border: none; border-radius: 12px; cursor: pointer;">Sign in</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ authStepIsForceChange }}" hint-placeholder-val="{{ false }}">
+      <div style="position: absolute; inset: 0; background: oklch(20% 0.02 50 / 0.45); display: flex; align-items: center; justify-content: center; z-index: 20; padding: 24px;">
+        <div style="background: white; border-radius: 18px; padding: 24px; width: 100%;">
+          <div style="font-weight: 800; font-size: 16px; margin-bottom: 4px;">Create your passcode</div>
+          <div style="font-size: 13px; color: oklch(48% 0.02 60); margin-bottom: 14px;">You're using the starting code (1111). Set your own before continuing.</div>
+          <input type="password" placeholder="New passcode" value="{{ newCodeValue }}" onChange="{{ onNewCodeChange }}" style="width: 100%; padding: 13px 14px; font-size: 16px; border-radius: 12px; border: 2px solid oklch(88% 0.015 60); text-align: center; letter-spacing: 2px; font-weight: 700; color: oklch(22% 0.02 50); margin-bottom: 10px;" />
+          <input type="password" placeholder="Confirm passcode" value="{{ newCodeConfirm }}" onChange="{{ onNewCodeConfirmChange }}" style="width: 100%; padding: 13px 14px; font-size: 16px; border-radius: 12px; border: 2px solid oklch(88% 0.015 60); text-align: center; letter-spacing: 2px; font-weight: 700; color: oklch(22% 0.02 50); margin-bottom: 10px;" />
+          <sc-if value="{{ newCodeError }}" hint-placeholder-val="{{ false }}">
+            <div style="color: oklch(55% 0.16 25); font-size: 13px; font-weight: 700; margin-bottom: 10px;">{{ newCodeError }}</div>
+          </sc-if>
+          <button onClick="{{ onSubmitNewCode }}" style="width: 100%; padding: 14px; font-size: 14px; font-weight: 700; color: white; background: oklch(58% 0.15 35); border: none; border-radius: 12px; cursor: pointer;">Save passcode</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ authStepIsSetupProfile }}" hint-placeholder-val="{{ false }}">
+      <div style="position: absolute; inset: 0; background: oklch(20% 0.02 50 / 0.45); display: flex; align-items: center; justify-content: center; z-index: 20; padding: 24px;">
+        <div style="background: white; border-radius: 18px; padding: 24px; width: 100%;">
+          <div style="font-weight: 800; font-size: 16px; margin-bottom: 4px;">Set up your profile</div>
+          <div style="font-size: 13px; color: oklch(48% 0.02 60); margin-bottom: 14px;">You're the owner — you'll be the one approving changes from other admins.</div>
+          <input type="text" placeholder="Your name" value="{{ profileNameValue }}" onChange="{{ onProfileNameChange }}" style="width: 100%; padding: 13px 14px; font-size: 15px; border-radius: 12px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 14px; color: oklch(22% 0.02 50);" />
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 2px; margin-bottom: 18px;">
+            <div style="font-weight: 700; font-size: 14px;">I work shifts too</div>
+            <div onClick="{{ toggleProfileWorksShifts }}" style="{{ profileWorksShiftsTrackStyle }}">
+              <div style="{{ profileWorksShiftsThumbStyle }}"></div>
+            </div>
+          </div>
+          <button onClick="{{ onSubmitProfile }}" style="width: 100%; padding: 14px; font-size: 14px; font-weight: 700; color: white; background: oklch(58% 0.15 35); border: none; border-radius: 12px; cursor: pointer;">Continue</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ authStepIsWhoAreYou }}" hint-placeholder-val="{{ false }}">
+      <div style="position: absolute; inset: 0; background: oklch(20% 0.02 50 / 0.45); display: flex; align-items: center; justify-content: center; z-index: 20; padding: 24px;">
+        <div style="background: white; border-radius: 18px; padding: 24px; width: 100%;">
+          <div style="font-weight: 800; font-size: 16px; margin-bottom: 14px;">Who's signing in?</div>
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;">
+            <sc-for list="{{ whoAreYouOptions }}" as="opt" hint-placeholder-count="2">
+              <button onClick="{{ opt.onClick }}" style="width: 100%; padding: 13px; font-size: 14px; font-weight: 700; border-radius: 12px; border: 2px solid oklch(88% 0.015 60); background: white; cursor: pointer; text-align: left;">{{ opt.name }}</button>
+            </sc-for>
+          </div>
+          <button onClick="{{ onCloseAdminPrompt }}" style="width: 100%; padding: 10px; font-size: 13px; font-weight: 600; color: oklch(48% 0.02 60); background: none; border: none; cursor: pointer;">Cancel</button>
+        </div>
+      </div>
+    </sc-if>
+
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const PALETTE = [
+  'oklch(58% 0.15 35)', 'oklch(56% 0.09 150)', 'oklch(60% 0.12 90)',
+  'oklch(55% 0.13 350)', 'oklch(55% 0.12 260)',
+];
+const NEUTRAL_BG = 'oklch(95% 0.02 60)';
+const BORDER = 'oklch(88% 0.015 60)';
+const MUTED = 'oklch(48% 0.02 60)';
+const TERRACOTTA = 'oklch(58% 0.15 35)';
+const DANGER = 'oklch(55% 0.16 25)';
+
+const WEEKDAY_LABELS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const FULL_WEEKDAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    this.applyingRemote = false;
+
+    this.state = {
+      adminPasscode: '1111',
+      passcodeIsDefault: true,
+      authStep: null,
+      adminCodeValue: '', adminCodeError: false,
+      newCodeValue: '', newCodeConfirm: '', newCodeError: '',
+      profileNameValue: '', profileWorksShifts: true,
+
+      currentAdminId: null,
+
+      activeTab: 'schedule',
+      view: 'week',
+      personFilter: 'all',
+      weekAnchor: this.startOfWeek(today),
+      monthAnchor: today,
+      selectedDay: this.iso(today),
+
+      people: [],
+      shifts: [],
+      pendingChanges: [],
+
+      showPersonForm: false, editingPersonId: null,
+      personFormName: '', personFormAccess: 'viewer', personFormCanShift: false,
+
+      notifPrefs: { changes: true, newShift: true, reminder: false },
+
+      showShiftForm: false, editingShiftId: null,
+      formPersonId: null, formDate: this.iso(today), formStart: '09:00', formEnd: '17:00', formRole: '', formNotes: '',
+
+      approvalToastText: '',
+    };
+  }
+
+  uid(prefix) { return prefix + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+
+  componentDidMount() {
+    const start = () => {
+      this.unsub = window.__shiftSyncDb.subscribe((data) => {
+        if (!data) return;
+        this.applyingRemote = true;
+        this.setState({
+          people: data.people || [],
+          shifts: data.shifts || [],
+          pendingChanges: data.pendingChanges || [],
+          notifPrefs: data.notifPrefs || this.state.notifPrefs,
+          adminPasscode: data.adminPasscode || '1111',
+          passcodeIsDefault: data.passcodeIsDefault !== undefined ? data.passcodeIsDefault : true,
+        }, () => { this.applyingRemote = false; });
+      });
+    };
+    if (window.__shiftSyncDb) start();
+    else window.addEventListener('shift-sync-db-ready', start, { once: true });
+  }
+  componentWillUnmount() { if (this.unsub) this.unsub(); }
+  componentDidUpdate(prevProps, prevState) {
+    if (this.applyingRemote || !window.__shiftSyncDb) return;
+    const keys = ['people', 'shifts', 'pendingChanges', 'notifPrefs', 'adminPasscode', 'passcodeIsDefault'];
+    const changed = keys.some(k => JSON.stringify(prevState[k]) !== JSON.stringify(this.state[k]));
+    if (changed) {
+      window.__shiftSyncDb.save({
+        people: this.state.people, shifts: this.state.shifts, pendingChanges: this.state.pendingChanges,
+        notifPrefs: this.state.notifPrefs, adminPasscode: this.state.adminPasscode, passcodeIsDefault: this.state.passcodeIsDefault,
+      });
+    }
+  }
+
+  iso(d) { const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${day}`; }
+  parseIso(s) { const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
+  addDays(d,n) { const r=new Date(d); r.setDate(r.getDate()+n); return r; }
+  addMonths(d,n) { const r=new Date(d); r.setMonth(r.getMonth()+n); return r; }
+  startOfWeek(d) { const r=new Date(d); const dow=r.getDay(); const diff=dow===0?-6:1-dow; r.setDate(r.getDate()+diff); r.setHours(0,0,0,0); return r; }
+  formatTime(t) { const [h,m]=t.split(':').map(Number); const period=h>=12?'PM':'AM'; let hh=h%12; if(hh===0) hh=12; return `${hh}:${String(m).padStart(2,'0')} ${period}`; }
+  hoursLabel(start,end) { const [sh,sm]=start.split(':').map(Number); const [eh,em]=end.split(':').map(Number); let mins=(eh*60+em)-(sh*60+sm); if(mins<0) mins+=24*60; const hrs=mins/60; return Number.isInteger(hrs) ? `${hrs} hrs` : `${hrs.toFixed(1)} hrs`; }
+
+  personById(id) { return this.state.people.find(p => p.id === id) || { name: 'Unknown', color: MUTED }; }
+  nextColor() { return PALETTE[this.state.people.length % PALETTE.length]; }
+  currentAdmin() { return this.state.currentAdminId ? this.personById(this.state.currentAdminId) : null; }
+  isPrimaryCurrent() { const a = this.currentAdmin(); return !!(a && a.isPrimary); }
+
+  getShiftsForDate(iso) {
+    const isAdmin = !!this.state.currentAdminId;
+    return this.state.shifts
+      .filter(s => s.date === iso)
+      .filter(s => this.state.personFilter === 'all' || s.personId === this.state.personFilter)
+      .sort((a,b) => a.start.localeCompare(b.start))
+      .map(s => {
+        const person = this.personById(s.personId);
+        return {
+          id: s.id,
+          personName: person.name,
+          roleText: s.role,
+          timeText: `${this.formatTime(s.start)} – ${this.formatTime(s.end)}`,
+          hoursText: this.hoursLabel(s.start, s.end),
+          notes: s.notes,
+          hasNotes: !!s.notes,
+          canEdit: isAdmin,
+          cardStyle: { background: 'oklch(97% 0.01 70)', borderRadius: '14px', padding: '14px', marginBottom: '10px', borderLeft: `4px solid ${person.color}` },
+          onEdit: () => this.openEditShift(s.id),
+          onDelete: () => this.deleteShift(s.id),
+        };
+      });
+  }
+
+  // ---- Admin auth flow ----
+  openAdminPrompt = () => this.setState({ authStep: 'passcode', adminCodeValue: '', adminCodeError: false });
+  closeAdminPrompt = () => this.setState({ authStep: null });
+  adminCodeChange = (e) => this.setState({ adminCodeValue: e.target.value, adminCodeError: false });
+  submitAdminCode = () => {
+    const s = this.state;
+    if (s.adminCodeValue !== s.adminPasscode) { this.setState({ adminCodeError: true }); return; }
+    if (s.passcodeIsDefault) { this.setState({ authStep: 'forceChange' }); return; }
+    const admins = s.people.filter(p => p.access === 'admin');
+    if (admins.length === 0) { this.setState({ authStep: 'setupProfile' }); return; }
+    if (admins.length === 1) { this.setState({ currentAdminId: admins[0].id, authStep: null }); return; }
+    this.setState({ authStep: 'whoAreYou' });
+  };
+  newCodeChange = (e) => this.setState({ newCodeValue: e.target.value, newCodeError: '' });
+  newCodeConfirmChange = (e) => this.setState({ newCodeConfirm: e.target.value, newCodeError: '' });
+  submitNewCode = () => {
+    const { newCodeValue, newCodeConfirm } = this.state;
+    if (!newCodeValue.trim()) { this.setState({ newCodeError: 'Enter a passcode.' }); return; }
+    if (newCodeValue === '1111') { this.setState({ newCodeError: 'Choose something other than 1111.' }); return; }
+    if (newCodeValue !== newCodeConfirm) { this.setState({ newCodeError: "Codes don't match." }); return; }
+    this.setState({ adminPasscode: newCodeValue, passcodeIsDefault: false, authStep: 'setupProfile', newCodeValue: '', newCodeConfirm: '' });
+  };
+  profileNameChange = (e) => this.setState({ profileNameValue: e.target.value });
+  toggleProfileWorksShifts = () => this.setState(s => ({ profileWorksShifts: !s.profileWorksShifts }));
+  submitProfile = () => {
+    const name = this.state.profileNameValue.trim();
+    if (!name) return;
+    const person = { id: this.uid('p'), name, access: 'admin', isPrimary: true, canHaveShifts: this.state.profileWorksShifts, color: this.nextColor() };
+    this.setState(s => ({ people: [...s.people, person], currentAdminId: person.id, authStep: null, profileNameValue: '' }));
+  };
+  selectWhoAreYou = (id) => this.setState({ currentAdminId: id, authStep: null });
+  logout = () => this.setState({ currentAdminId: null, activeTab: 'schedule' });
+
+  goTab = (tab) => this.setState({ activeTab: tab });
+  setView = (view) => this.setState({ view });
+  setPersonFilter = (id) => this.setState({ personFilter: id });
+
+  prevDay = () => this.setState(s => ({ selectedDay: this.iso(this.addDays(this.parseIso(s.selectedDay), -1)) }));
+  nextDay = () => this.setState(s => ({ selectedDay: this.iso(this.addDays(this.parseIso(s.selectedDay), 1)) }));
+  todayDay = () => this.setState({ selectedDay: this.iso(new Date(new Date().setHours(0,0,0,0))) });
+  prevWeek = () => this.setState(s => ({ weekAnchor: this.addDays(s.weekAnchor, -7) }));
+  nextWeek = () => this.setState(s => ({ weekAnchor: this.addDays(s.weekAnchor, 7) }));
+  thisWeek = () => this.setState({ weekAnchor: this.startOfWeek(new Date()) });
+  prevMonth = () => this.setState(s => ({ monthAnchor: this.addMonths(s.monthAnchor, -1) }));
+  nextMonth = () => this.setState(s => ({ monthAnchor: this.addMonths(s.monthAnchor, 1) }));
+  thisMonth = () => { const t = new Date(); this.setState({ monthAnchor: t, selectedDay: this.iso(t) }); };
+  selectMonthDay = (iso) => this.setState({ selectedDay: iso });
+
+  // ---- Shift form ----
+  openAddShift = () => {
+    const anchor = this.state.selectedDay;
+    const firstPerson = this.state.people.find(p => p.canHaveShifts);
+    this.setState({ showShiftForm: true, editingShiftId: null, formPersonId: firstPerson ? firstPerson.id : null, formDate: anchor, formStart: '09:00', formEnd: '17:00', formRole: '', formNotes: '' });
+  };
+  openEditShift = (id) => {
+    const s = this.state.shifts.find(x => x.id === id);
+    if (!s) return;
+    this.setState({ showShiftForm: true, editingShiftId: id, formPersonId: s.personId, formDate: s.date, formStart: s.start, formEnd: s.end, formRole: s.role, formNotes: s.notes });
+  };
+  closeForm = () => this.setState({ showShiftForm: false });
+  setFormPerson = (id) => this.setState({ formPersonId: id });
+  formDateChange = (e) => this.setState({ formDate: e.target.value });
+  formStartChange = (e) => this.setState({ formStart: e.target.value });
+  formEndChange = (e) => this.setState({ formEnd: e.target.value });
+  formRoleChange = (e) => this.setState({ formRole: e.target.value });
+  formNotesChange = (e) => this.setState({ formNotes: e.target.value });
+
+  flashToast(text) {
+    this.setState({ approvalToastText: text });
+    setTimeout(() => this.setState(s => (s.approvalToastText === text ? { approvalToastText: '' } : {})), 2500);
+  }
+
+  saveShift = () => {
+    const { editingShiftId, formPersonId, formDate, formStart, formEnd, formRole, formNotes } = this.state;
+    if (!formPersonId) return;
+    const payload = { personId: formPersonId, date: formDate, start: formStart, end: formEnd, role: formRole || 'Shift', notes: formNotes };
+    if (this.isPrimaryCurrent()) {
+      if (editingShiftId) {
+        this.setState(s => ({ shifts: s.shifts.map(sh => sh.id === editingShiftId ? { ...sh, ...payload } : sh), showShiftForm: false }));
+      } else {
+        this.setState(s => ({ shifts: [...s.shifts, { id: this.uid('s'), ...payload }], showShiftForm: false }));
+      }
+    } else {
+      const admin = this.currentAdmin();
+      const personName = this.personById(formPersonId).name;
+      const change = {
+        id: this.uid('c'),
+        type: editingShiftId ? 'edit' : 'add',
+        targetShiftId: editingShiftId,
+        payload,
+        summary: `${admin.name} wants to ${editingShiftId ? 'edit' : 'add'} a shift for ${personName} on ${payload.date} (${payload.start}–${payload.end})`,
+      };
+      this.setState(s => ({ pendingChanges: [...s.pendingChanges, change], showShiftForm: false }));
+      this.flashToast('Sent for approval.');
+    }
+  };
+  deleteShift = (id) => {
+    if (this.isPrimaryCurrent()) {
+      this.setState(s => ({ shifts: s.shifts.filter(sh => sh.id !== id) }));
+    } else {
+      const admin = this.currentAdmin();
+      const sh = this.state.shifts.find(x => x.id === id);
+      const personName = sh ? this.personById(sh.personId).name : '';
+      const change = { id: this.uid('c'), type: 'delete', targetShiftId: id, payload: null, summary: `${admin.name} wants to delete ${personName}'s shift on ${sh ? sh.date : ''}` };
+      this.setState(s => ({ pendingChanges: [...s.pendingChanges, change] }));
+      this.flashToast('Sent for approval.');
+    }
+  };
+  deleteShiftFromForm = () => { if (this.state.editingShiftId) this.deleteShift(this.state.editingShiftId); this.setState({ showShiftForm: false }); };
+
+  approveChange = (id) => {
+    const change = this.state.pendingChanges.find(c => c.id === id);
+    if (!change) return;
+    this.setState(s => {
+      let shifts = s.shifts;
+      if (change.type === 'add') shifts = [...shifts, { id: this.uid('s'), ...change.payload }];
+      else if (change.type === 'edit') shifts = shifts.map(sh => sh.id === change.targetShiftId ? { ...sh, ...change.payload } : sh);
+      else if (change.type === 'delete') shifts = shifts.filter(sh => sh.id !== change.targetShiftId);
+      return { shifts, pendingChanges: s.pendingChanges.filter(c => c.id !== id) };
+    });
+  };
+  declineChange = (id) => this.setState(s => ({ pendingChanges: s.pendingChanges.filter(c => c.id !== id) }));
+
+  // ---- People management ----
+  openAddPerson = () => this.setState({ showPersonForm: true, editingPersonId: null, personFormName: '', personFormAccess: 'viewer', personFormCanShift: false });
+  openEditPerson = (id) => {
+    const p = this.personById(id);
+    this.setState({ showPersonForm: true, editingPersonId: id, personFormName: p.name, personFormAccess: p.access, personFormCanShift: p.canHaveShifts });
+  };
+  closePersonForm = () => this.setState({ showPersonForm: false });
+  personFormNameChange = (e) => this.setState({ personFormName: e.target.value });
+  setPersonFormAccess = (access) => this.setState({ personFormAccess: access });
+  togglePersonFormCanShift = () => this.setState(s => ({ personFormCanShift: !s.personFormCanShift }));
+  savePersonForm = () => {
+    const name = this.state.personFormName.trim();
+    if (!name) return;
+    const { editingPersonId, personFormAccess, personFormCanShift } = this.state;
+    if (editingPersonId) {
+      this.setState(s => ({ people: s.people.map(p => p.id === editingPersonId ? { ...p, name, access: personFormAccess, canHaveShifts: personFormCanShift } : p), showPersonForm: false }));
+    } else {
+      const person = { id: this.uid('p'), name, access: personFormAccess, isPrimary: false, canHaveShifts: personFormCanShift, color: this.nextColor() };
+      this.setState(s => ({ people: [...s.people, person], showPersonForm: false }));
+    }
+  };
+  removePerson = (id) => this.setState(s => ({ people: s.people.filter(p => p.id !== id) }));
+
+  toggleNotif = (key) => this.setState(s => ({ notifPrefs: { ...s.notifPrefs, [key]: !s.notifPrefs[key] } }));
+
+  buildToggleStyles(checked) {
+    return {
+      track: { width: '44px', height: '26px', borderRadius: '13px', background: checked ? TERRACOTTA : 'oklch(85% 0.01 60)', position: 'relative', cursor: 'pointer', flexShrink: 0, transition: 'background 0.15s' },
+      thumb: { position: 'absolute', top: '2px', left: checked ? '20px' : '2px', width: '22px', height: '22px', borderRadius: '50%', background: 'white', transition: 'left 0.15s', boxShadow: '0 1px 3px rgba(0,0,0,0.25)' },
+    };
+  }
+
+  renderVals() {
+    const s = this.state;
+    const isAdmin = !!s.currentAdminId;
+    const isPrimary = this.isPrimaryCurrent();
+    const today = new Date(); today.setHours(0,0,0,0);
+    const todayIso = this.iso(today);
+    const shiftPeople = s.people.filter(p => p.canHaveShifts);
+
+    const tabBtn = (active) => ({ flex: 1, padding: '14px', textAlign: 'center', border: 'none', background: 'none', cursor: 'pointer', fontSize: '13px', fontWeight: active ? '800' : '600', color: active ? TERRACOTTA : MUTED, borderTop: active ? `2px solid ${TERRACOTTA}` : '2px solid transparent' });
+    const segBtn = (active) => ({ flex: 1, padding: '9px', border: 'none', borderRadius: '9px', cursor: 'pointer', fontSize: '13px', fontWeight: '700', background: active ? 'white' : 'transparent', color: active ? TERRACOTTA : MUTED, boxShadow: active ? '0 1px 4px rgba(0,0,0,0.1)' : 'none' });
+
+    const personChips = [{ id: 'all', label: 'Everyone', showDot: false, color: null }]
+      .concat(shiftPeople.map(p => ({ id: p.id, label: p.name, showDot: true, color: p.color })))
+      .map(c => ({
+        ...c,
+        onClick: () => this.setPersonFilter(c.id),
+        style: { display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '999px', cursor: 'pointer', fontSize: '13px', fontWeight: '700', border: `2px solid ${s.personFilter === c.id ? TERRACOTTA : BORDER}`, background: s.personFilter === c.id ? 'oklch(93% 0.05 40)' : 'white', color: s.personFilter === c.id ? TERRACOTTA : MUTED },
+        dotStyle: { width: '8px', height: '8px', borderRadius: '50%', background: c.color, display: 'inline-block' },
+      }));
+
+    const dayShifts = this.getShiftsForDate(s.selectedDay);
+    const selDayDate = this.parseIso(s.selectedDay);
+    const dayLabel = `${FULL_WEEKDAYS[selDayDate.getDay()]}, ${MONTH_NAMES[selDayDate.getMonth()]} ${selDayDate.getDate()}`;
+
+    const weekDays = [];
+    for (let i = 0; i < 7; i++) {
+      const d = this.addDays(s.weekAnchor, i);
+      const iso = this.iso(d);
+      const shiftsForDay = this.getShiftsForDate(iso);
+      weekDays.push({ iso, label: `${FULL_WEEKDAYS[d.getDay()]}, ${MONTH_NAMES[d.getMonth()]} ${d.getDate()}`, shifts: shiftsForDay, empty: shiftsForDay.length === 0,
+        headerStyle: { fontWeight: '700', fontSize: '13px', marginBottom: '8px', paddingBottom: '6px', borderBottom: `2px solid ${iso === todayIso ? TERRACOTTA : BORDER}`, color: iso === todayIso ? TERRACOTTA : 'inherit' } });
+    }
+    const weekEnd = this.addDays(s.weekAnchor, 6);
+    const weekRangeLabel = `${MONTH_NAMES[s.weekAnchor.getMonth()].slice(0,3)} ${s.weekAnchor.getDate()} – ${MONTH_NAMES[weekEnd.getMonth()].slice(0,3)} ${weekEnd.getDate()}`;
+
+    const monthLabel = `${MONTH_NAMES[s.monthAnchor.getMonth()]} ${s.monthAnchor.getFullYear()}`;
+    const first = new Date(s.monthAnchor.getFullYear(), s.monthAnchor.getMonth(), 1);
+    let cursor = this.startOfWeek(first);
+    const monthWeeks = [];
+    for (let w = 0; w < 6; w++) {
+      const row = [];
+      for (let d = 0; d < 7; d++) {
+        const iso = this.iso(cursor);
+        const inMonth = cursor.getMonth() === s.monthAnchor.getMonth();
+        const isToday = iso === todayIso;
+        const isSelected = iso === s.selectedDay;
+        const colors = [...new Set(s.shifts.filter(sh => sh.date === iso).map(sh => this.personById(sh.personId).color))];
+        row.push({
+          iso, dayNum: cursor.getDate(),
+          dotColors: colors.map(c => ({ style: { width: '5px', height: '5px', borderRadius: '50%', background: c, display: 'inline-block' } })),
+          onClick: () => this.selectMonthDay(iso),
+          style: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', aspectRatio: '1', borderRadius: '10px', cursor: 'pointer', fontSize: '13px', fontWeight: isToday ? '800' : '600', background: isSelected ? 'oklch(93% 0.05 40)' : 'transparent', border: isToday ? `2px solid ${TERRACOTTA}` : '2px solid transparent', color: inMonth ? (isToday ? TERRACOTTA : 'oklch(22% 0.02 50)') : 'oklch(75% 0.01 60)' },
+        });
+        cursor = this.addDays(cursor, 1);
+      }
+      monthWeeks.push(row);
+    }
+    const selectedDayShifts = this.getShiftsForDate(s.selectedDay);
+    const selDate2 = this.parseIso(s.selectedDay);
+    const selectedDayLabel = `${FULL_WEEKDAYS[selDate2.getDay()]}, ${MONTH_NAMES[selDate2.getMonth()]} ${selDate2.getDate()}`;
+
+    const people = s.people.map(p => ({
+      ...p,
+      dotStyle: { width: '10px', height: '10px', borderRadius: '50%', background: p.color, display: 'inline-block', flexShrink: 0 },
+      summaryLabel: `${p.access === 'admin' ? 'Admin — can edit' : 'Viewer — can see only'}${p.canHaveShifts ? ' · works shifts' : ''}${p.isPrimary ? ' · owner' : ''}`,
+      canRemove: !p.isPrimary,
+      onEdit: () => this.openEditPerson(p.id),
+      onRemove: () => this.removePerson(p.id),
+    }));
+
+    const pendingChanges = s.pendingChanges.map(c => ({ ...c, onApprove: () => this.approveChange(c.id), onDecline: () => this.declineChange(c.id) }));
+
+    const notifDefs = [
+      { key: 'changes', label: 'Schedule changes', desc: 'When any shift is edited or removed' },
+      { key: 'newShift', label: 'New shifts added', desc: 'When a new shift is scheduled' },
+      { key: 'reminder', label: 'Day-before reminder', desc: 'A nudge the evening before a shift' },
+    ];
+    const notifItems = notifDefs.map(n => { const checked = s.notifPrefs[n.key]; const st = this.buildToggleStyles(checked); return { ...n, onToggle: () => this.toggleNotif(n.key), trackStyle: st.track, thumbStyle: st.thumb }; });
+
+    const formPersonOptions = shiftPeople.map(p => ({ id: p.id, name: p.name, onClick: () => this.setFormPerson(p.id),
+      style: { flex: '1 0 auto', padding: '10px 14px', borderRadius: '10px', cursor: 'pointer', fontSize: '13px', fontWeight: '700', border: `2px solid ${s.formPersonId === p.id ? p.color : BORDER}`, background: s.formPersonId === p.id ? 'oklch(93% 0.05 40)' : 'white', color: s.formPersonId === p.id ? p.color : 'inherit' } }));
+
+    const whoAreYouOptions = s.people.filter(p => p.access === 'admin').map(p => ({ id: p.id, name: p.name, onClick: () => this.selectWhoAreYou(p.id) }));
+
+    const profileToggle = this.buildToggleStyles(s.profileWorksShifts);
+    const personShiftToggle = this.buildToggleStyles(s.personFormCanShift);
+
+    return {
+      showAdminSignIn: !isAdmin,
+      roleLabel: isAdmin ? (isPrimary ? 'Admin' : `Admin — ${this.currentAdmin().name}`) : 'Viewer',
+      roleBadgeStyle: { fontSize: '11px', fontWeight: '800', padding: '5px 10px', borderRadius: '999px', background: isAdmin ? 'oklch(93% 0.05 40)' : NEUTRAL_BG, color: isAdmin ? TERRACOTTA : MUTED },
+      isAdmin,
+
+      showApprovalToast: !!s.approvalToastText,
+      approvalToastText: s.approvalToastText,
+
+      tabIsSchedule: s.activeTab === 'schedule',
+      tabIsPeople: s.activeTab === 'people',
+      tabIsSettings: s.activeTab === 'settings',
+      goSchedule: () => this.goTab('schedule'),
+      goPeople: () => this.goTab('people'),
+      goSettings: () => this.goTab('settings'),
+      navScheduleStyle: tabBtn(s.activeTab === 'schedule'),
+      navPeopleStyle: tabBtn(s.activeTab === 'people'),
+      navSettingsStyle: tabBtn(s.activeTab === 'settings'),
+
+      noShiftPeople: shiftPeople.length === 0,
+      hasShiftPeople: shiftPeople.length > 0,
+
+      viewIsDay: s.view === 'day', viewIsWeek: s.view === 'week', viewIsMonth: s.view === 'month',
+      setViewDay: () => this.setView('day'), setViewWeek: () => this.setView('week'), setViewMonth: () => this.setView('month'),
+      dayTabStyle: segBtn(s.view === 'day'), weekTabStyle: segBtn(s.view === 'week'), monthTabStyle: segBtn(s.view === 'month'),
+
+      personChips,
+      dayLabel, dayShifts, dayShiftsEmpty: dayShifts.length === 0,
+      prevDay: this.prevDay, nextDay: this.nextDay, todayDay: this.todayDay,
+      weekRangeLabel, weekDays,
+      prevWeek: this.prevWeek, nextWeek: this.nextWeek, thisWeek: this.thisWeek,
+      monthLabel, monthWeeks, weekdayLabels: WEEKDAY_LABELS,
+      prevMonth: this.prevMonth, nextMonth: this.nextMonth, thisMonth: this.thisMonth,
+      selectedDayLabel, selectedDayShifts, selectedDayEmpty: selectedDayShifts.length === 0,
+
+      people,
+      showApprovals: isPrimary && s.pendingChanges.length > 0,
+      pendingChanges,
+      openAddPerson: this.openAddPerson,
+
+      notifItems,
+      onLogout: this.logout,
+
+      showAddButton: isAdmin && s.activeTab === 'schedule' && !s.showShiftForm && shiftPeople.length > 0,
+      openAddShift: this.openAddShift,
+
+      showShiftForm: s.showShiftForm,
+      formTitle: s.editingShiftId ? 'Edit Shift' : 'Add Shift',
+      saveShiftLabel: isPrimary ? 'Save shift' : 'Submit for approval',
+      deleteShiftLabel: isPrimary ? 'Delete this shift' : 'Submit deletion for approval',
+      isEditingShift: !!s.editingShiftId,
+      formPersonOptions,
+      formDate: s.formDate, onFormDateChange: this.formDateChange,
+      formStart: s.formStart, onFormStartChange: this.formStartChange,
+      formEnd: s.formEnd, onFormEndChange: this.formEndChange,
+      formRole: s.formRole, onFormRoleChange: this.formRoleChange,
+      formNotes: s.formNotes, onFormNotesChange: this.formNotesChange,
+      closeForm: this.closeForm, saveShift: this.saveShift, deleteShiftFromForm: this.deleteShiftFromForm,
+
+      showPersonForm: s.showPersonForm,
+      personFormTitle: s.editingPersonId ? 'Edit Profile' : 'Add a Person',
+      personFormName: s.personFormName, onPersonFormNameChange: this.personFormNameChange,
+      personFormAccessViewerStyle: segBtn(s.personFormAccess === 'viewer'),
+      personFormAccessAdminStyle: segBtn(s.personFormAccess === 'admin'),
+      setPersonFormAccessViewer: () => this.setPersonFormAccess('viewer'),
+      setPersonFormAccessAdmin: () => this.setPersonFormAccess('admin'),
+      togglePersonFormCanShift: this.togglePersonFormCanShift,
+      personFormCanShiftTrackStyle: personShiftToggle.track,
+      personFormCanShiftThumbStyle: personShiftToggle.thumb,
+      closePersonForm: this.closePersonForm, savePersonForm: this.savePersonForm,
+
+      authStepIsPasscode: s.authStep === 'passcode',
+      authStepIsForceChange: s.authStep === 'forceChange',
+      authStepIsSetupProfile: s.authStep === 'setupProfile',
+      authStepIsWhoAreYou: s.authStep === 'whoAreYou',
+      adminCodeValue: s.adminCodeValue, adminCodeError: s.adminCodeError,
+      onOpenAdminPrompt: this.openAdminPrompt, onCloseAdminPrompt: this.closeAdminPrompt,
+      onAdminCodeChange: this.adminCodeChange, onSubmitAdminCode: this.submitAdminCode,
+      newCodeValue: s.newCodeValue, newCodeConfirm: s.newCodeConfirm, newCodeError: s.newCodeError,
+      onNewCodeChange: this.newCodeChange, onNewCodeConfirmChange: this.newCodeConfirmChange, onSubmitNewCode: this.submitNewCode,
+      profileNameValue: s.profileNameValue, onProfileNameChange: this.profileNameChange,
+      toggleProfileWorksShifts: this.toggleProfileWorksShifts,
+      profileWorksShiftsTrackStyle: profileToggle.track, profileWorksShiftsThumbStyle: profileToggle.thumb,
+      onSubmitProfile: this.submitProfile,
+      whoAreYouOptions,
+    };
+  }
+}
+
+</script>
+</body>
+</html>
