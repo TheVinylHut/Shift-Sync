@@ -270,6 +270,18 @@
         </div>
 
         <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-bottom: 24px;">
+            <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Saved shift times</div>
+            <sc-if value="{{ noPresets }}" hint-placeholder-val="{{ true }}">
+              <div style="font-size: 13px; color: oklch(55% 0.02 60);">None saved yet — add one from the shift-add form.</div>
+            </sc-if>
+            <sc-for list="{{ presetList }}" as="preset" hint-placeholder-count="0">
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 4px; border-bottom: 1px solid oklch(92% 0.015 60);">
+                <div style="font-size: 14px; font-weight: 700;">{{ preset.label }}</div>
+                <button onClick="{{ preset.onRemove }}" style="border: none; background: none; color: oklch(55% 0.16 25); font-size: 12px; font-weight: 700; cursor: pointer;">Remove</button>
+              </div>
+            </sc-for>
+          </div>
           <button onClick="{{ onLogout }}" style="width: 100%; padding: 13px; font-size: 14px; font-weight: 700; color: oklch(48% 0.02 60); background: oklch(95% 0.02 60); border: none; border-radius: 10px; cursor: pointer;">Sign out of admin</button>
         </sc-if>
       </sc-if>
@@ -299,33 +311,111 @@
             </sc-for>
           </div>
 
-          <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Date</div>
-          <input type="date" value="{{ formDate }}" onChange="{{ onFormDateChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 14px; color: oklch(22% 0.02 50);" />
+          <sc-if value="{{ isEditingShift }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Date</div>
+            <input type="date" value="{{ formDate }}" onChange="{{ onFormDateChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 14px; color: oklch(22% 0.02 50);" />
 
-          <div style="display: flex; gap: 10px; margin-bottom: 14px;">
+            <div style="display: flex; gap: 10px; margin-bottom: 14px;">
+              <div style="flex: 1;">
+                <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Starts</div>
+                <input type="time" value="{{ formStart }}" onChange="{{ onFormStartChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); color: oklch(22% 0.02 50);" />
+              </div>
+              <div style="flex: 1;">
+                <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Ends</div>
+                <input type="time" value="{{ formEnd }}" onChange="{{ onFormEndChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); color: oklch(22% 0.02 50);" />
+              </div>
+            </div>
+
+            <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Role / station</div>
+            <input type="text" placeholder="e.g. Baker, Counter Staff" value="{{ formRole }}" onChange="{{ onFormRoleChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 14px; color: oklch(22% 0.02 50);" />
+
+            <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Notes (optional)</div>
+            <input type="text" placeholder="e.g. picking up early" value="{{ formNotes }}" onChange="{{ onFormNotesChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 18px; color: oklch(22% 0.02 50);" />
+
+            <div style="display: flex; gap: 10px;">
+              <button onClick="{{ closeForm }}" style="flex: 1; padding: 14px; font-size: 14px; font-weight: 700; border-radius: 12px; border: 2px solid oklch(88% 0.015 60); background: white; cursor: pointer;">Cancel</button>
+              <button onClick="{{ saveShift }}" style="flex: 2; padding: 14px; font-size: 14px; font-weight: 700; color: white; background: oklch(58% 0.15 35); border: none; border-radius: 12px; cursor: pointer;">{{ saveShiftLabel }}</button>
+            </div>
+            <button onClick="{{ deleteShiftFromForm }}" style="width: 100%; margin-top: 10px; padding: 10px; font-size: 13px; font-weight: 700; color: oklch(55% 0.16 25); background: none; border: none; cursor: pointer;">{{ deleteShiftLabel }}</button>
+          </sc-if>
+
+          <sc-if value="{{ isAddingShift }}" hint-placeholder-val="{{ true }}">
+            <sc-for list="{{ formRows }}" as="row" hint-placeholder-count="1">
+              <div style="border: 1px solid oklch(90% 0.015 60); border-radius: 14px; padding: 14px; margin-bottom: 12px; position: relative;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                  <div style="font-size: 12px; font-weight: 800; color: oklch(48% 0.02 60);">Day {{ row.rowNum }}</div>
+                  <sc-if value="{{ row.canRemove }}" hint-placeholder-val="{{ false }}">
+                    <button onClick="{{ row.onRemove }}" style="border: none; background: none; color: oklch(55% 0.16 25); font-size: 12px; font-weight: 700; cursor: pointer;">Remove</button>
+                  </sc-if>
+                </div>
+
+                <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Date</div>
+                <input type="date" value="{{ row.date }}" onChange="{{ row.onDateChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 10px; color: oklch(22% 0.02 50);" />
+
+                <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Shift time</div>
+                <select onChange="{{ row.onPresetChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 10px; color: oklch(22% 0.02 50); background: white;">
+                  <sc-for list="{{ row.presetOptions }}" as="opt" hint-placeholder-count="1">
+                    <option value="{{ opt.value }}">{{ opt.label }}</option>
+                  </sc-for>
+                </select>
+
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                  <div style="flex: 1;">
+                    <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Starts</div>
+                    <input type="time" value="{{ row.start }}" onChange="{{ row.onStartChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); color: oklch(22% 0.02 50);" />
+                  </div>
+                  <div style="flex: 1;">
+                    <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Ends</div>
+                    <input type="time" value="{{ row.end }}" onChange="{{ row.onEndChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); color: oklch(22% 0.02 50);" />
+                  </div>
+                </div>
+
+                <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Role / station</div>
+                <input type="text" placeholder="e.g. Baker, Counter Staff" value="{{ row.role }}" onChange="{{ row.onRoleChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 10px; color: oklch(22% 0.02 50);" />
+
+                <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Notes (optional)</div>
+                <input type="text" placeholder="e.g. picking up early" value="{{ row.notes }}" onChange="{{ row.onNotesChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); color: oklch(22% 0.02 50);" />
+              </div>
+            </sc-for>
+
+            <button onClick="{{ addFormRow }}" style="width: 100%; padding: 12px; font-size: 13px; font-weight: 700; color: oklch(58% 0.15 35); background: oklch(95% 0.02 60); border: 2px dashed oklch(85% 0.02 50); border-radius: 12px; cursor: pointer; margin-bottom: 16px;">+ Add another day</button>
+
+            <div style="display: flex; gap: 10px;">
+              <button onClick="{{ closeForm }}" style="flex: 1; padding: 14px; font-size: 14px; font-weight: 700; border-radius: 12px; border: 2px solid oklch(88% 0.015 60); background: white; cursor: pointer;">Cancel</button>
+              <button onClick="{{ saveShift }}" style="flex: 2; padding: 14px; font-size: 14px; font-weight: 700; color: white; background: oklch(58% 0.15 35); border: none; border-radius: 12px; cursor: pointer;">{{ saveShiftBatchLabel }}</button>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showPresetForm }}" hint-placeholder-val="{{ false }}">
+      <div style="position: absolute; inset: 0; background: oklch(20% 0.02 50 / 0.45); display: flex; align-items: center; justify-content: center; z-index: 30; padding: 24px;">
+        <div style="background: white; border-radius: 18px; padding: 24px; width: 100%;">
+          <div style="font-weight: 800; font-size: 16px; margin-bottom: 4px;">Add a shift time</div>
+          <div style="font-size: 13px; color: oklch(48% 0.02 60); margin-bottom: 14px;">Save a common shift time so you can pick it from the list next time.</div>
+
+          <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Label (optional)</div>
+          <input type="text" placeholder="e.g. Morning" value="{{ presetFormLabel }}" onChange="{{ onPresetFormLabelChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 12px; color: oklch(22% 0.02 50);" />
+
+          <div style="display: flex; gap: 10px; margin-bottom: 10px;">
             <div style="flex: 1;">
               <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Starts</div>
-              <input type="time" value="{{ formStart }}" onChange="{{ onFormStartChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); color: oklch(22% 0.02 50);" />
+              <input type="time" value="{{ presetFormStart }}" onChange="{{ onPresetFormStartChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); color: oklch(22% 0.02 50);" />
             </div>
             <div style="flex: 1;">
               <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Ends</div>
-              <input type="time" value="{{ formEnd }}" onChange="{{ onFormEndChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); color: oklch(22% 0.02 50);" />
+              <input type="time" value="{{ presetFormEnd }}" onChange="{{ onPresetFormEndChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); color: oklch(22% 0.02 50);" />
             </div>
           </div>
-
-          <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Role / station</div>
-          <input type="text" placeholder="e.g. Baker, Counter Staff" value="{{ formRole }}" onChange="{{ onFormRoleChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 14px; color: oklch(22% 0.02 50);" />
-
-          <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Notes (optional)</div>
-          <input type="text" placeholder="e.g. picking up early" value="{{ formNotes }}" onChange="{{ onFormNotesChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 18px; color: oklch(22% 0.02 50);" />
+          <sc-if value="{{ presetFormError }}" hint-placeholder-val="{{ false }}">
+            <div style="color: oklch(55% 0.16 25); font-size: 13px; font-weight: 700; margin-bottom: 10px;">{{ presetFormError }}</div>
+          </sc-if>
 
           <div style="display: flex; gap: 10px;">
-            <button onClick="{{ closeForm }}" style="flex: 1; padding: 14px; font-size: 14px; font-weight: 700; border-radius: 12px; border: 2px solid oklch(88% 0.015 60); background: white; cursor: pointer;">Cancel</button>
-            <button onClick="{{ saveShift }}" style="flex: 2; padding: 14px; font-size: 14px; font-weight: 700; color: white; background: oklch(58% 0.15 35); border: none; border-radius: 12px; cursor: pointer;">{{ saveShiftLabel }}</button>
+            <button onClick="{{ closePresetForm }}" style="flex: 1; padding: 13px; font-size: 14px; font-weight: 700; border-radius: 12px; border: 2px solid oklch(88% 0.015 60); background: white; cursor: pointer;">Cancel</button>
+            <button onClick="{{ savePreset }}" style="flex: 2; padding: 13px; font-size: 14px; font-weight: 700; color: white; background: oklch(58% 0.15 35); border: none; border-radius: 12px; cursor: pointer;">Save shift time</button>
           </div>
-          <sc-if value="{{ isEditingShift }}" hint-placeholder-val="{{ false }}">
-            <button onClick="{{ deleteShiftFromForm }}" style="width: 100%; margin-top: 10px; padding: 10px; font-size: 13px; font-weight: 700; color: oklch(55% 0.16 25); background: none; border: none; cursor: pointer;">{{ deleteShiftLabel }}</button>
-          </sc-if>
         </div>
       </div>
     </sc-if>
@@ -464,7 +554,7 @@ class Component extends DCLogic {
       currentAdminId: null,
 
       activeTab: 'schedule',
-      view: 'week',
+      view: 'day',
       personFilter: 'all',
       weekAnchor: this.startOfWeek(today),
       monthAnchor: today,
@@ -481,6 +571,10 @@ class Component extends DCLogic {
 
       showShiftForm: false, editingShiftId: null,
       formPersonId: null, formDate: this.iso(today), formStart: '09:00', formEnd: '17:00', formRole: '', formNotes: '',
+      formRows: [],
+
+      shiftPresets: [],
+      showPresetForm: false, presetFormRowId: null, presetFormLabel: '', presetFormStart: '09:00', presetFormEnd: '17:00', presetFormError: '',
 
       approvalToastText: '',
     };
@@ -499,6 +593,7 @@ class Component extends DCLogic {
           notifPrefs: data.notifPrefs || this.state.notifPrefs,
           adminPasscode: data.adminPasscode || '1111',
           passcodeIsDefault: data.passcodeIsDefault !== undefined ? data.passcodeIsDefault : true,
+          shiftPresets: data.shiftPresets || [],
         });
       }
       this.hasLoadedRemote = true;
@@ -513,6 +608,7 @@ class Component extends DCLogic {
     window.__shiftSyncDb.save({
       people: this.state.people, shifts: this.state.shifts, pendingChanges: this.state.pendingChanges,
       notifPrefs: this.state.notifPrefs, adminPasscode: this.state.adminPasscode, passcodeIsDefault: this.state.passcodeIsDefault,
+      shiftPresets: this.state.shiftPresets,
     });
   }
 
@@ -569,7 +665,7 @@ class Component extends DCLogic {
     this.pushToRemote();
   }
   snapshotKeys() {
-    const keys = ['people', 'shifts', 'pendingChanges', 'notifPrefs', 'adminPasscode', 'passcodeIsDefault'];
+    const keys = ['people', 'shifts', 'pendingChanges', 'notifPrefs', 'adminPasscode', 'passcodeIsDefault', 'shiftPresets'];
     return JSON.stringify(keys.map(k => this.state[k]));
   }
 
@@ -662,7 +758,8 @@ class Component extends DCLogic {
   openAddShift = () => {
     const anchor = this.state.selectedDay;
     const firstPerson = this.state.people.find(p => p.canHaveShifts);
-    this.setState({ showShiftForm: true, editingShiftId: null, formPersonId: firstPerson ? firstPerson.id : null, formDate: anchor, formStart: '09:00', formEnd: '17:00', formRole: '', formNotes: '' });
+    const row = { id: this.uid('row'), date: anchor, start: '09:00', end: '17:00', role: '', notes: '' };
+    this.setState({ showShiftForm: true, editingShiftId: null, formPersonId: firstPerson ? firstPerson.id : null, formRows: [row] });
   };
   openEditShift = (id) => {
     const s = this.state.shifts.find(x => x.id === id);
@@ -677,33 +774,81 @@ class Component extends DCLogic {
   formRoleChange = (e) => this.setState({ formRole: e.target.value });
   formNotesChange = (e) => this.setState({ formNotes: e.target.value });
 
+  addFormRow = () => {
+    this.setState(s => {
+      const last = s.formRows[s.formRows.length - 1];
+      const nextDate = last ? this.iso(this.addDays(this.parseIso(last.date), 1)) : this.iso(new Date());
+      const row = { id: this.uid('row'), date: nextDate, start: last ? last.start : '09:00', end: last ? last.end : '17:00', role: last ? last.role : '', notes: '' };
+      return { formRows: [...s.formRows, row] };
+    });
+  };
+  removeFormRow = (id) => this.setState(s => ({ formRows: s.formRows.filter(r => r.id !== id) }));
+  updateFormRow = (id, field, value) => this.setState(s => ({ formRows: s.formRows.map(r => r.id === id ? { ...r, [field]: value } : r) }));
+  rowFieldChange = (id, field) => (e) => this.updateFormRow(id, field, e.target.value);
+
+  applyPresetToRow = (rowId) => (e) => {
+    const val = e.target.value;
+    if (val === '__new__') { this.openPresetForm(rowId); return; }
+    const preset = this.state.shiftPresets.find(p => p.id === val);
+    if (preset) this.setState(s => ({ formRows: s.formRows.map(r => r.id === rowId ? { ...r, start: preset.start, end: preset.end } : r) }));
+  };
+
+  openPresetForm = (rowId) => this.setState({ showPresetForm: true, presetFormRowId: rowId, presetFormLabel: '', presetFormStart: '09:00', presetFormEnd: '17:00', presetFormError: '' });
+  closePresetForm = () => this.setState({ showPresetForm: false });
+  presetFormLabelChange = (e) => this.setState({ presetFormLabel: e.target.value, presetFormError: '' });
+  presetFormStartChange = (e) => this.setState({ presetFormStart: e.target.value, presetFormError: '' });
+  presetFormEndChange = (e) => this.setState({ presetFormEnd: e.target.value, presetFormError: '' });
+  savePreset = () => {
+    const { presetFormStart, presetFormEnd, presetFormRowId } = this.state;
+    if (!presetFormStart || !presetFormEnd) { this.setState({ presetFormError: 'Enter both a start and end time.' }); return; }
+    const label = this.state.presetFormLabel.trim() || `${this.formatTime(presetFormStart)} – ${this.formatTime(presetFormEnd)}`;
+    const preset = { id: this.uid('pre'), label, start: presetFormStart, end: presetFormEnd };
+    this.setState(s => ({
+      shiftPresets: [...s.shiftPresets, preset],
+      formRows: presetFormRowId ? s.formRows.map(r => r.id === presetFormRowId ? { ...r, start: preset.start, end: preset.end } : r) : s.formRows,
+      showPresetForm: false,
+    }));
+  };
+  removePreset = (id) => this.setState(s => ({ shiftPresets: s.shiftPresets.filter(p => p.id !== id) }));
+
   flashToast(text) {
     this.setState({ approvalToastText: text });
     setTimeout(() => this.setState(s => (s.approvalToastText === text ? { approvalToastText: '' } : {})), 2500);
   }
 
   saveShift = () => {
-    const { editingShiftId, formPersonId, formDate, formStart, formEnd, formRole, formNotes } = this.state;
+    const { editingShiftId, formPersonId } = this.state;
     if (!formPersonId) return;
-    const payload = { personId: formPersonId, date: formDate, start: formStart, end: formEnd, role: formRole || 'Shift', notes: formNotes };
-    if (this.isPrimaryCurrent()) {
-      if (editingShiftId) {
+    const isPrimary = this.isPrimaryCurrent();
+
+    if (editingShiftId) {
+      const { formDate, formStart, formEnd, formRole, formNotes } = this.state;
+      const payload = { personId: formPersonId, date: formDate, start: formStart, end: formEnd, role: formRole || 'Shift', notes: formNotes };
+      if (isPrimary) {
         this.setState(s => ({ shifts: s.shifts.map(sh => sh.id === editingShiftId ? { ...sh, ...payload } : sh), showShiftForm: false }));
       } else {
-        this.setState(s => ({ shifts: [...s.shifts, { id: this.uid('s'), ...payload }], showShiftForm: false }));
+        const admin = this.currentAdmin();
+        const personName = this.personById(formPersonId).name;
+        const change = { id: this.uid('c'), type: 'edit', targetShiftId: editingShiftId, payload, summary: `${admin.name} wants to edit ${personName}'s shift on ${payload.date} (${payload.start}–${payload.end})` };
+        this.setState(s => ({ pendingChanges: [...s.pendingChanges, change], showShiftForm: false }));
+        this.flashToast('Sent for approval.');
       }
+      return;
+    }
+
+    const rows = this.state.formRows.filter(r => r.date);
+    if (rows.length === 0) return;
+    const payloads = rows.map(r => ({ personId: formPersonId, date: r.date, start: r.start, end: r.end, role: r.role || 'Shift', notes: r.notes }));
+
+    if (isPrimary) {
+      const newShifts = payloads.map(p => ({ id: this.uid('s'), ...p }));
+      this.setState(s => ({ shifts: [...s.shifts, ...newShifts], showShiftForm: false }));
     } else {
       const admin = this.currentAdmin();
       const personName = this.personById(formPersonId).name;
-      const change = {
-        id: this.uid('c'),
-        type: editingShiftId ? 'edit' : 'add',
-        targetShiftId: editingShiftId,
-        payload,
-        summary: `${admin.name} wants to ${editingShiftId ? 'edit' : 'add'} a shift for ${personName} on ${payload.date} (${payload.start}–${payload.end})`,
-      };
-      this.setState(s => ({ pendingChanges: [...s.pendingChanges, change], showShiftForm: false }));
-      this.flashToast('Sent for approval.');
+      const changes = payloads.map(p => ({ id: this.uid('c'), type: 'add', targetShiftId: null, payload: p, summary: `${admin.name} wants to add a shift for ${personName} on ${p.date} (${p.start}–${p.end})` }));
+      this.setState(s => ({ pendingChanges: [...s.pendingChanges, ...changes], showShiftForm: false }));
+      this.flashToast(payloads.length > 1 ? `${payloads.length} shifts sent for approval.` : 'Sent for approval.');
     }
   };
   deleteShift = (id) => {
@@ -852,6 +997,32 @@ class Component extends DCLogic {
     const profileToggle = this.buildToggleStyles(s.profileWorksShifts);
     const personShiftToggle = this.buildToggleStyles(s.personFormCanShift);
 
+    const presetSelectOptions = [{ value: '', label: 'Custom time…' }]
+      .concat(s.shiftPresets.map(p => ({ value: p.id, label: p.label })))
+      .concat([{ value: '__new__', label: '+ Add new shift time…' }]);
+
+    const formRows = s.formRows.map((r, idx) => ({
+      id: r.id,
+      rowNum: idx + 1,
+      date: r.date,
+      start: r.start,
+      end: r.end,
+      role: r.role,
+      notes: r.notes,
+      canRemove: s.formRows.length > 1,
+      onDateChange: this.rowFieldChange(r.id, 'date'),
+      onStartChange: this.rowFieldChange(r.id, 'start'),
+      onEndChange: this.rowFieldChange(r.id, 'end'),
+      onRoleChange: this.rowFieldChange(r.id, 'role'),
+      onNotesChange: this.rowFieldChange(r.id, 'notes'),
+      onPresetChange: this.applyPresetToRow(r.id),
+      onRemove: () => this.removeFormRow(r.id),
+      presetOptions: presetSelectOptions,
+    }));
+    const saveShiftBatchLabel = isPrimary
+      ? (formRows.length > 1 ? `Save ${formRows.length} shifts` : 'Save shift')
+      : (formRows.length > 1 ? `Submit ${formRows.length} for approval` : 'Submit for approval');
+
     return {
       showAdminSignIn: !isAdmin,
       roleLabel: isAdmin ? (isPrimary ? 'Admin' : `Admin — ${this.currentAdmin().name}`) : 'Viewer',
@@ -894,15 +1065,19 @@ class Component extends DCLogic {
 
       notifItems,
       onLogout: this.logout,
+      noPresets: s.shiftPresets.length === 0,
+      presetList: s.shiftPresets.map(p => ({ ...p, onRemove: () => this.removePreset(p.id) })),
 
       showAddButton: isAdmin && s.activeTab === 'schedule' && !s.showShiftForm && shiftPeople.length > 0,
       openAddShift: this.openAddShift,
 
       showShiftForm: s.showShiftForm,
-      formTitle: s.editingShiftId ? 'Edit Shift' : 'Add Shift',
+      formTitle: s.editingShiftId ? 'Edit Shift' : 'Add Shifts',
       saveShiftLabel: isPrimary ? 'Save shift' : 'Submit for approval',
+      saveShiftBatchLabel,
       deleteShiftLabel: isPrimary ? 'Delete this shift' : 'Submit deletion for approval',
       isEditingShift: !!s.editingShiftId,
+      isAddingShift: !s.editingShiftId,
       formPersonOptions,
       formDate: s.formDate, onFormDateChange: this.formDateChange,
       formStart: s.formStart, onFormStartChange: this.formStartChange,
@@ -910,6 +1085,14 @@ class Component extends DCLogic {
       formRole: s.formRole, onFormRoleChange: this.formRoleChange,
       formNotes: s.formNotes, onFormNotesChange: this.formNotesChange,
       closeForm: this.closeForm, saveShift: this.saveShift, deleteShiftFromForm: this.deleteShiftFromForm,
+      formRows, addFormRow: this.addFormRow,
+
+      showPresetForm: s.showPresetForm,
+      presetFormLabel: s.presetFormLabel, onPresetFormLabelChange: this.presetFormLabelChange,
+      presetFormStart: s.presetFormStart, onPresetFormStartChange: this.presetFormStartChange,
+      presetFormEnd: s.presetFormEnd, onPresetFormEndChange: this.presetFormEndChange,
+      presetFormError: s.presetFormError,
+      closePresetForm: this.closePresetForm, savePreset: this.savePreset,
 
       showPersonForm: s.showPersonForm,
       personFormTitle: s.editingPersonId ? 'Edit Profile' : 'Add a Person',
