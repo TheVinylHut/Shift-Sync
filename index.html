@@ -506,6 +506,7 @@ class Component extends DCLogic {
   pushToRemote() {
     if (!window.__shiftSyncDb) { this.pendingSave = true; return; }
     this.pendingSave = false;
+    console.log('[shiftSync] pushing to remote', this.state.people, this.state.shifts);
     window.__shiftSyncDb.save({
       people: this.state.people, shifts: this.state.shifts, pendingChanges: this.state.pendingChanges,
       notifPrefs: this.state.notifPrefs, adminPasscode: this.state.adminPasscode, passcodeIsDefault: this.state.passcodeIsDefault,
