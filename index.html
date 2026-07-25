@@ -15,7 +15,7 @@
     body { margin: 0; }
     * { box-sizing: border-box; font-family: 'Nunito', sans-serif; }
   </style>
-  <script defer src="https://cdn.onesignal.com/OneSignalSDK.page.js"></script>
+  <script defer src="https://cdn.onesignal.com/OneSignalSDK.page.js" onerror="window.__oneSignalInitError = 'The notification script was blocked (likely by an ad blocker, privacy extension, or Brave Shields). Try disabling it for this site and reload.'; window.dispatchEvent(new Event('onesignal-error'));"></script>
   <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
@@ -34,7 +34,10 @@
       }
     });
     setTimeout(function() {
-      if (!window.__oneSignalReady) window.dispatchEvent(new Event('onesignal-error'));
+      if (!window.__oneSignalReady) {
+        if (!window.__oneSignalInitError) window.__oneSignalInitError = window.OneSignal ? 'OneSignal loaded but never finished initializing.' : 'The notification script never loaded — likely blocked by an ad blocker, privacy extension, or Brave Shields. Try disabling it for this site and reload.';
+        window.dispatchEvent(new Event('onesignal-error'));
+      }
     }, 6000);
   </script>
 </helmet>
