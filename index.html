@@ -273,6 +273,19 @@
 
         <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
           <div style="margin-bottom: 24px;">
+            <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Your passcode</div>
+            <input type="password" placeholder="New passcode" value="{{ selfCodeValue }}" onChange="{{ onSelfCodeChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 8px; color: oklch(22% 0.02 50); letter-spacing: 1px;" />
+            <input type="password" placeholder="Confirm new passcode" value="{{ selfCodeConfirm }}" onChange="{{ onSelfCodeConfirmChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 8px; color: oklch(22% 0.02 50); letter-spacing: 1px;" />
+            <sc-if value="{{ selfCodeError }}" hint-placeholder-val="{{ false }}">
+              <div style="color: oklch(55% 0.16 25); font-size: 12px; font-weight: 700; margin-bottom: 8px;">{{ selfCodeError }}</div>
+            </sc-if>
+            <sc-if value="{{ selfCodeSaved }}" hint-placeholder-val="{{ false }}">
+              <div style="color: oklch(56% 0.09 150); font-size: 12px; font-weight: 700; margin-bottom: 8px;">Passcode updated.</div>
+            </sc-if>
+            <button onClick="{{ onSaveSelfCode }}" style="width: 100%; padding: 12px; font-size: 13px; font-weight: 700; color: white; background: oklch(58% 0.15 35); border: none; border-radius: 10px; cursor: pointer;">Update my passcode</button>
+          </div>
+
+          <div style="margin-bottom: 24px;">
             <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Saved shift times</div>
             <sc-if value="{{ noPresets }}" hint-placeholder-val="{{ true }}">
               <div style="font-size: 13px; color: oklch(55% 0.02 60);">None saved yet — add one from the shift-add form.</div>
@@ -440,6 +453,18 @@
             <button onClick="{{ setPersonFormAccessAdmin }}" style="{{ personFormAccessAdminStyle }}">Can edit too</button>
           </div>
 
+          <sc-if value="{{ personFormIsAdmin }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Their sign-in code</div>
+            <div style="display: flex; gap: 8px; margin-bottom: 4px;">
+              <input type="text" placeholder="e.g. 4821" value="{{ personFormPasscode }}" onChange="{{ onPersonFormPasscodeChange }}" style="flex: 1; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); letter-spacing: 1px; font-weight: 700; color: oklch(22% 0.02 50);" />
+              <button onClick="{{ onGeneratePersonFormPasscode }}" style="padding: 0 14px; font-size: 12px; font-weight: 700; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); background: white; cursor: pointer;">Generate</button>
+            </div>
+            <sc-if value="{{ personFormPasscodeError }}" hint-placeholder-val="{{ false }}">
+              <div style="color: oklch(55% 0.16 25); font-size: 12px; font-weight: 700; margin-bottom: 8px;">{{ personFormPasscodeError }}</div>
+            </sc-if>
+            <div style="font-size: 12px; color: oklch(55% 0.02 60); margin-bottom: 14px; line-height: 1.4;">Give them this code to sign in the first time — they'll be asked to set their own right after.</div>
+          </sc-if>
+
           <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 2px; margin-bottom: 18px;">
             <div>
               <div style="font-weight: 700; font-size: 14px;">Works shifts</div>
@@ -478,8 +503,8 @@
     <sc-if value="{{ authStepIsForceChange }}" hint-placeholder-val="{{ false }}">
       <div style="position: absolute; inset: 0; background: oklch(20% 0.02 50 / 0.45); display: flex; align-items: center; justify-content: center; z-index: 20; padding: 24px;">
         <div style="background: white; border-radius: 18px; padding: 24px; width: 100%;">
-          <div style="font-weight: 800; font-size: 16px; margin-bottom: 4px;">Create your passcode</div>
-          <div style="font-size: 13px; color: oklch(48% 0.02 60); margin-bottom: 14px;">You're using the starting code (1111). Set your own before continuing.</div>
+          <div style="font-weight: 800; font-size: 16px; margin-bottom: 4px;">Create your own passcode</div>
+          <div style="font-size: 13px; color: oklch(48% 0.02 60); margin-bottom: 14px;">{{ forceChangeDescription }}</div>
           <input type="password" placeholder="New passcode" value="{{ newCodeValue }}" onChange="{{ onNewCodeChange }}" style="width: 100%; padding: 13px 14px; font-size: 16px; border-radius: 12px; border: 2px solid oklch(88% 0.015 60); text-align: center; letter-spacing: 2px; font-weight: 700; color: oklch(22% 0.02 50); margin-bottom: 10px;" />
           <input type="password" placeholder="Confirm passcode" value="{{ newCodeConfirm }}" onChange="{{ onNewCodeConfirmChange }}" style="width: 100%; padding: 13px 14px; font-size: 16px; border-radius: 12px; border: 2px solid oklch(88% 0.015 60); text-align: center; letter-spacing: 2px; font-weight: 700; color: oklch(22% 0.02 50); margin-bottom: 10px;" />
           <sc-if value="{{ newCodeError }}" hint-placeholder-val="{{ false }}">
@@ -507,19 +532,7 @@
       </div>
     </sc-if>
 
-    <sc-if value="{{ authStepIsWhoAreYou }}" hint-placeholder-val="{{ false }}">
-      <div style="position: absolute; inset: 0; background: oklch(20% 0.02 50 / 0.45); display: flex; align-items: center; justify-content: center; z-index: 20; padding: 24px;">
-        <div style="background: white; border-radius: 18px; padding: 24px; width: 100%;">
-          <div style="font-weight: 800; font-size: 16px; margin-bottom: 14px;">Who's signing in?</div>
-          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;">
-            <sc-for list="{{ whoAreYouOptions }}" as="opt" hint-placeholder-count="2">
-              <button onClick="{{ opt.onClick }}" style="width: 100%; padding: 13px; font-size: 14px; font-weight: 700; border-radius: 12px; border: 2px solid oklch(88% 0.015 60); background: white; cursor: pointer; text-align: left;">{{ opt.name }}</button>
-            </sc-for>
-          </div>
-          <button onClick="{{ onCloseAdminPrompt }}" style="width: 100%; padding: 10px; font-size: 13px; font-weight: 600; color: oklch(48% 0.02 60); background: none; border: none; cursor: pointer;">Cancel</button>
-        </div>
-      </div>
-    </sc-if>
+
 
   </div>
 </div>
@@ -549,13 +562,17 @@ class Component extends DCLogic {
     this.applyingRemote = false;
     this.hasLoadedRemote = false;
 
+    this.BOOTSTRAP_CODE = '1111';
+
     this.state = {
-      adminPasscode: '1111',
-      passcodeIsDefault: true,
       authStep: null,
+      authMode: null,
+      matchedPersonId: null,
+      pendingPasscode: '',
       adminCodeValue: '', adminCodeError: false,
       newCodeValue: '', newCodeConfirm: '', newCodeError: '',
       profileNameValue: '', profileWorksShifts: true,
+      selfCodeValue: '', selfCodeConfirm: '', selfCodeError: '', selfCodeSaved: false,
 
       currentAdminId: null,
 
@@ -571,7 +588,7 @@ class Component extends DCLogic {
       pendingChanges: [],
 
       showPersonForm: false, editingPersonId: null,
-      personFormName: '', personFormAccess: 'viewer', personFormCanShift: false,
+      personFormName: '', personFormAccess: 'viewer', personFormCanShift: false, personFormPasscode: '', personFormPasscodeError: '',
 
       notifPrefs: { changes: true, newShift: true, reminder: false },
 
@@ -594,13 +611,15 @@ class Component extends DCLogic {
     this.unsub = window.__shiftSyncDb.subscribe((data) => {
       this.applyingRemote = true;
       if (data) {
+        let people = data.people || [];
+        if (data.adminPasscode) {
+          people = people.map(p => (p.access === 'admin' && !p.passcode) ? { ...p, passcode: data.adminPasscode, mustChangePasscode: true } : p);
+        }
         this.setState({
-          people: data.people || [],
+          people,
           shifts: data.shifts || [],
           pendingChanges: data.pendingChanges || [],
           notifPrefs: data.notifPrefs || this.state.notifPrefs,
-          adminPasscode: data.adminPasscode || '1111',
-          passcodeIsDefault: data.passcodeIsDefault !== undefined ? data.passcodeIsDefault : true,
           shiftPresets: data.shiftPresets || [],
         });
       }
@@ -613,11 +632,15 @@ class Component extends DCLogic {
   pushToRemote() {
     if (!window.__shiftSyncDb) { this.pendingSave = true; return; }
     this.pendingSave = false;
+    this.pushSnapshot(this.state);
+  }
+  pushSnapshot(s) {
+    if (!window.__shiftSyncDb) return;
     window.__shiftSyncDb.save({
-      people: this.state.people, shifts: this.state.shifts, pendingChanges: this.state.pendingChanges,
-      notifPrefs: this.state.notifPrefs, adminPasscode: this.state.adminPasscode, passcodeIsDefault: this.state.passcodeIsDefault,
-      shiftPresets: this.state.shiftPresets,
+      people: s.people, shifts: s.shifts, pendingChanges: s.pendingChanges,
+      notifPrefs: s.notifPrefs, shiftPresets: s.shiftPresets,
     });
+    this.lastSynced = JSON.stringify(['people', 'shifts', 'pendingChanges', 'notifPrefs', 'shiftPresets'].map(k => s[k]));
   }
 
   handleResize = () => this.setState({ viewportWidth: window.innerWidth });
@@ -676,7 +699,7 @@ class Component extends DCLogic {
     this.pushToRemote();
   }
   snapshotKeys() {
-    const keys = ['people', 'shifts', 'pendingChanges', 'notifPrefs', 'adminPasscode', 'passcodeIsDefault', 'shiftPresets'];
+    const keys = ['people', 'shifts', 'pendingChanges', 'notifPrefs', 'shiftPresets'];
     return JSON.stringify(keys.map(k => this.state[k]));
   }
 
@@ -719,36 +742,68 @@ class Component extends DCLogic {
 
   // ---- Admin auth flow ----
   openAdminPrompt = () => this.setState({ authStep: 'passcode', adminCodeValue: '', adminCodeError: false });
-  closeAdminPrompt = () => this.setState({ authStep: null });
+  closeAdminPrompt = () => this.setState({ authStep: null, authMode: null, matchedPersonId: null });
   adminCodeChange = (e) => this.setState({ adminCodeValue: e.target.value, adminCodeError: false });
   submitAdminCode = () => {
     const s = this.state;
-    if (s.adminCodeValue !== s.adminPasscode) { this.setState({ adminCodeError: true }); return; }
-    if (s.passcodeIsDefault) { this.setState({ authStep: 'forceChange' }); return; }
+    const code = s.adminCodeValue;
     const admins = s.people.filter(p => p.access === 'admin');
-    if (admins.length === 0) { this.setState({ authStep: 'setupProfile' }); return; }
-    if (admins.length === 1) { this.setState({ currentAdminId: admins[0].id, authStep: null }); return; }
-    this.setState({ authStep: 'whoAreYou' });
+    if (admins.length === 0) {
+      if (code !== this.BOOTSTRAP_CODE) { this.setState({ adminCodeError: true }); return; }
+      this.setState({ authStep: 'forceChange', authMode: 'newOwner', newCodeValue: '', newCodeConfirm: '', newCodeError: '' });
+      return;
+    }
+    const match = admins.find(p => p.passcode === code);
+    if (!match) { this.setState({ adminCodeError: true }); return; }
+    if (match.mustChangePasscode) {
+      this.setState({ authStep: 'forceChange', authMode: 'existingAdmin', matchedPersonId: match.id, newCodeValue: '', newCodeConfirm: '', newCodeError: '' });
+    } else {
+      this.setState({ currentAdminId: match.id, authStep: null });
+    }
   };
   newCodeChange = (e) => this.setState({ newCodeValue: e.target.value, newCodeError: '' });
   newCodeConfirmChange = (e) => this.setState({ newCodeConfirm: e.target.value, newCodeError: '' });
   submitNewCode = () => {
-    const { newCodeValue, newCodeConfirm } = this.state;
+    const { newCodeValue, newCodeConfirm, authMode, matchedPersonId } = this.state;
     if (!newCodeValue.trim()) { this.setState({ newCodeError: 'Enter a passcode.' }); return; }
-    if (newCodeValue === '1111') { this.setState({ newCodeError: 'Choose something other than 1111.' }); return; }
+    if (authMode === 'newOwner' && newCodeValue === '1111') { this.setState({ newCodeError: 'Choose something other than 1111.' }); return; }
     if (newCodeValue !== newCodeConfirm) { this.setState({ newCodeError: "Codes don't match." }); return; }
-    this.setState({ adminPasscode: newCodeValue, passcodeIsDefault: false, authStep: 'setupProfile', newCodeValue: '', newCodeConfirm: '' });
+    if (authMode === 'newOwner') {
+      this.setState({ pendingPasscode: newCodeValue, authStep: 'setupProfile', newCodeValue: '', newCodeConfirm: '' });
+    } else {
+      this.setState(s => {
+        const people = s.people.map(p => p.id === matchedPersonId ? { ...p, passcode: newCodeValue, mustChangePasscode: false } : p);
+        this.pushSnapshot({ ...s, people });
+        return { people, currentAdminId: matchedPersonId, authStep: null, authMode: null, matchedPersonId: null, newCodeValue: '', newCodeConfirm: '' };
+      });
+    }
   };
   profileNameChange = (e) => this.setState({ profileNameValue: e.target.value });
   toggleProfileWorksShifts = () => this.setState(s => ({ profileWorksShifts: !s.profileWorksShifts }));
   submitProfile = () => {
     const name = this.state.profileNameValue.trim();
     if (!name) return;
-    const person = { id: this.uid('p'), name, access: 'admin', isPrimary: true, canHaveShifts: this.state.profileWorksShifts, color: this.nextColor() };
-    this.setState(s => ({ people: [...s.people, person], currentAdminId: person.id, authStep: null, profileNameValue: '' }));
+    const person = { id: this.uid('p'), name, access: 'admin', isPrimary: true, canHaveShifts: this.state.profileWorksShifts, color: this.nextColor(), passcode: this.state.pendingPasscode, mustChangePasscode: false };
+    this.setState(s => {
+      const people = [...s.people, person];
+      this.pushSnapshot({ ...s, people });
+      return { people, currentAdminId: person.id, authStep: null, authMode: null, profileNameValue: '', pendingPasscode: '' };
+    });
   };
-  selectWhoAreYou = (id) => this.setState({ currentAdminId: id, authStep: null });
   logout = () => this.setState({ currentAdminId: null, activeTab: 'schedule' });
+
+  selfCodeChange = (e) => this.setState({ selfCodeValue: e.target.value, selfCodeError: '', selfCodeSaved: false });
+  selfCodeConfirmChange = (e) => this.setState({ selfCodeConfirm: e.target.value, selfCodeError: '', selfCodeSaved: false });
+  saveSelfCode = () => {
+    const { selfCodeValue, selfCodeConfirm, currentAdminId } = this.state;
+    if (!selfCodeValue.trim()) { this.setState({ selfCodeError: 'Enter a passcode.' }); return; }
+    if (selfCodeValue !== selfCodeConfirm) { this.setState({ selfCodeError: "Codes don't match." }); return; }
+    this.setState(s => {
+      const people = s.people.map(p => p.id === currentAdminId ? { ...p, passcode: selfCodeValue, mustChangePasscode: false } : p);
+      this.pushSnapshot({ ...s, people });
+      return { people, selfCodeValue: '', selfCodeConfirm: '', selfCodeError: '', selfCodeSaved: true };
+    });
+  };
 
   goTab = (tab) => this.setState({ activeTab: tab });
   setView = (view) => this.setState({ view });
@@ -837,7 +892,11 @@ class Component extends DCLogic {
       const { formDate, formStart, formEnd, formRole, formNotes } = this.state;
       const payload = { personId: formPersonId, date: formDate, start: formStart, end: formEnd, role: formRole || 'Shift', notes: formNotes };
       if (isPrimary) {
-        this.setState(s => ({ shifts: s.shifts.map(sh => sh.id === editingShiftId ? { ...sh, ...payload } : sh), showShiftForm: false }));
+        this.setState(s => {
+          const next = { ...s, shifts: s.shifts.map(sh => sh.id === editingShiftId ? { ...sh, ...payload } : sh) };
+          this.pushSnapshot(next);
+          return { shifts: next.shifts, showShiftForm: false, view: 'day', selectedDay: payload.date };
+        });
       } else {
         const admin = this.currentAdmin();
         const personName = this.personById(formPersonId).name;
@@ -854,7 +913,13 @@ class Component extends DCLogic {
 
     if (isPrimary) {
       const newShifts = payloads.map(p => ({ id: this.uid('s'), ...p }));
-      this.setState(s => ({ shifts: [...s.shifts, ...newShifts], showShiftForm: false }));
+      const sortedDates = payloads.map(p => p.date).sort();
+      this.setState(s => {
+        const next = { ...s, shifts: [...s.shifts, ...newShifts] };
+        this.pushSnapshot(next);
+        return { shifts: next.shifts, showShiftForm: false, view: 'day', selectedDay: sortedDates[0] };
+      });
+      this.flashToast(payloads.length > 1 ? `${payloads.length} shifts added.` : 'Shift added.');
     } else {
       const admin = this.currentAdmin();
       const personName = this.personById(formPersonId).name;
@@ -891,24 +956,48 @@ class Component extends DCLogic {
   declineChange = (id) => this.setState(s => ({ pendingChanges: s.pendingChanges.filter(c => c.id !== id) }));
 
   // ---- People management ----
-  openAddPerson = () => this.setState({ showPersonForm: true, editingPersonId: null, personFormName: '', personFormAccess: 'viewer', personFormCanShift: false });
+  openAddPerson = () => this.setState({ showPersonForm: true, editingPersonId: null, personFormName: '', personFormAccess: 'viewer', personFormCanShift: false, personFormPasscode: '', personFormPasscodeError: '' });
   openEditPerson = (id) => {
     const p = this.personById(id);
-    this.setState({ showPersonForm: true, editingPersonId: id, personFormName: p.name, personFormAccess: p.access, personFormCanShift: p.canHaveShifts });
+    this.setState({ showPersonForm: true, editingPersonId: id, personFormName: p.name, personFormAccess: p.access, personFormCanShift: p.canHaveShifts, personFormPasscode: p.passcode || '', personFormPasscodeError: '' });
   };
   closePersonForm = () => this.setState({ showPersonForm: false });
   personFormNameChange = (e) => this.setState({ personFormName: e.target.value });
   setPersonFormAccess = (access) => this.setState({ personFormAccess: access });
   togglePersonFormCanShift = () => this.setState(s => ({ personFormCanShift: !s.personFormCanShift }));
+  personFormPasscodeChange = (e) => this.setState({ personFormPasscode: e.target.value, personFormPasscodeError: '' });
+  generatePersonFormPasscode = () => this.setState({ personFormPasscode: String(Math.floor(1000 + Math.random() * 9000)), personFormPasscodeError: '' });
   savePersonForm = () => {
     const name = this.state.personFormName.trim();
     if (!name) return;
-    const { editingPersonId, personFormAccess, personFormCanShift } = this.state;
+    const { editingPersonId, personFormAccess, personFormCanShift, personFormPasscode } = this.state;
+    if (personFormAccess === 'admin' && !personFormPasscode.trim()) {
+      this.setState({ personFormPasscodeError: 'Set a code for this admin.' });
+      return;
+    }
     if (editingPersonId) {
-      this.setState(s => ({ people: s.people.map(p => p.id === editingPersonId ? { ...p, name, access: personFormAccess, canHaveShifts: personFormCanShift } : p), showPersonForm: false }));
+      this.setState(s => {
+        const existing = s.people.find(p => p.id === editingPersonId);
+        const codeChanged = personFormAccess === 'admin' && personFormPasscode !== (existing.passcode || '');
+        const people = s.people.map(p => p.id === editingPersonId ? {
+          ...p, name, access: personFormAccess, canHaveShifts: personFormCanShift,
+          passcode: personFormAccess === 'admin' ? personFormPasscode : undefined,
+          mustChangePasscode: codeChanged ? true : (p.mustChangePasscode || false),
+        } : p);
+        this.pushSnapshot({ ...s, people });
+        return { people, showPersonForm: false };
+      });
     } else {
-      const person = { id: this.uid('p'), name, access: personFormAccess, isPrimary: false, canHaveShifts: personFormCanShift, color: this.nextColor() };
-      this.setState(s => ({ people: [...s.people, person], showPersonForm: false }));
+      const person = {
+        id: this.uid('p'), name, access: personFormAccess, isPrimary: false, canHaveShifts: personFormCanShift, color: this.nextColor(),
+        passcode: personFormAccess === 'admin' ? personFormPasscode : undefined,
+        mustChangePasscode: personFormAccess === 'admin',
+      };
+      this.setState(s => {
+        const people = [...s.people, person];
+        this.pushSnapshot({ ...s, people });
+        return { people, showPersonForm: false };
+      });
     }
   };
   removePerson = (id) => this.setState(s => ({ people: s.people.filter(p => p.id !== id) }));
@@ -1008,7 +1097,7 @@ class Component extends DCLogic {
     const people = s.people.map(p => ({
       ...p,
       dotStyle: { width: '10px', height: '10px', borderRadius: '50%', background: p.color, display: 'inline-block', flexShrink: 0 },
-      summaryLabel: `${p.access === 'admin' ? 'Admin — can edit' : 'Viewer — can see only'}${p.canHaveShifts ? ' · works shifts' : ''}${p.isPrimary ? ' · owner' : ''}`,
+      summaryLabel: `${p.access === 'admin' ? 'Admin — can edit' : 'Viewer — can see only'}${p.canHaveShifts ? ' · works shifts' : ''}${p.isPrimary ? ' · owner' : ''}${(isPrimary && p.access === 'admin' && p.passcode) ? ' · code: ' + p.passcode + (p.mustChangePasscode ? ' (temp)' : '') : ''}`,
       canRemove: !p.isPrimary,
       onEdit: () => this.openEditPerson(p.id),
       onRemove: () => this.removePerson(p.id),
@@ -1025,8 +1114,6 @@ class Component extends DCLogic {
 
     const formPersonOptions = shiftPeople.map(p => ({ id: p.id, name: p.name, onClick: () => this.setFormPerson(p.id),
       style: { flex: '1 0 auto', padding: '10px 14px', borderRadius: '10px', cursor: 'pointer', fontSize: '13px', fontWeight: '700', border: `2px solid ${s.formPersonId === p.id ? p.color : BORDER}`, background: s.formPersonId === p.id ? 'oklch(93% 0.05 40)' : 'white', color: s.formPersonId === p.id ? p.color : 'inherit' } }));
-
-    const whoAreYouOptions = s.people.filter(p => p.access === 'admin').map(p => ({ id: p.id, name: p.name, onClick: () => this.selectWhoAreYou(p.id) }));
 
     const profileToggle = this.buildToggleStyles(s.profileWorksShifts);
     const personShiftToggle = this.buildToggleStyles(s.personFormCanShift);
@@ -1115,6 +1202,10 @@ class Component extends DCLogic {
       onLogout: this.logout,
       noPresets: s.shiftPresets.length === 0,
       presetList: s.shiftPresets.map(p => ({ ...p, onRemove: () => this.removePreset(p.id) })),
+      selfCodeValue: s.selfCodeValue, onSelfCodeChange: this.selfCodeChange,
+      selfCodeConfirm: s.selfCodeConfirm, onSelfCodeConfirmChange: this.selfCodeConfirmChange,
+      selfCodeError: s.selfCodeError, selfCodeSaved: s.selfCodeSaved,
+      onSaveSelfCode: this.saveSelfCode,
 
       showAddButton: isAdmin && s.activeTab === 'schedule' && !s.showShiftForm && shiftPeople.length > 0,
       openAddShift: this.openAddShift,
@@ -1144,6 +1235,10 @@ class Component extends DCLogic {
 
       showPersonForm: s.showPersonForm,
       personFormTitle: s.editingPersonId ? 'Edit Profile' : 'Add a Person',
+      personFormIsAdmin: s.personFormAccess === 'admin',
+      personFormPasscode: s.personFormPasscode, onPersonFormPasscodeChange: this.personFormPasscodeChange,
+      onGeneratePersonFormPasscode: this.generatePersonFormPasscode,
+      personFormPasscodeError: s.personFormPasscodeError,
       personFormName: s.personFormName, onPersonFormNameChange: this.personFormNameChange,
       personFormAccessViewerStyle: segBtn(s.personFormAccess === 'viewer'),
       personFormAccessAdminStyle: segBtn(s.personFormAccess === 'admin'),
@@ -1156,8 +1251,8 @@ class Component extends DCLogic {
 
       authStepIsPasscode: s.authStep === 'passcode',
       authStepIsForceChange: s.authStep === 'forceChange',
+      forceChangeDescription: s.authMode === 'newOwner' ? "You're using the starting code (1111). Set your own before continuing." : 'This code was set for you temporarily. Choose your own to continue.',
       authStepIsSetupProfile: s.authStep === 'setupProfile',
-      authStepIsWhoAreYou: s.authStep === 'whoAreYou',
       adminCodeValue: s.adminCodeValue, adminCodeError: s.adminCodeError,
       onOpenAdminPrompt: this.openAdminPrompt, onCloseAdminPrompt: this.closeAdminPrompt,
       onAdminCodeChange: this.adminCodeChange, onSubmitAdminCode: this.submitAdminCode,
@@ -1167,7 +1262,6 @@ class Component extends DCLogic {
       toggleProfileWorksShifts: this.toggleProfileWorksShifts,
       profileWorksShiftsTrackStyle: profileToggle.track, profileWorksShiftsThumbStyle: profileToggle.thumb,
       onSubmitProfile: this.submitProfile,
-      whoAreYouOptions,
     };
   }
 }
