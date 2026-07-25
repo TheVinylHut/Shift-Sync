@@ -451,6 +451,7 @@ class Component extends DCLogic {
     today.setHours(0, 0, 0, 0);
 
     this.applyingRemote = false;
+    this.hasLoadedRemote = false;
 
     this.state = {
       adminPasscode: '1111',
@@ -489,16 +490,19 @@ class Component extends DCLogic {
 
   startSync() {
     this.unsub = window.__shiftSyncDb.subscribe((data) => {
-      if (!data) return;
       this.applyingRemote = true;
-      this.setState({
-        people: data.people || [],
-        shifts: data.shifts || [],
-        pendingChanges: data.pendingChanges || [],
-        notifPrefs: data.notifPrefs || this.state.notifPrefs,
-        adminPasscode: data.adminPasscode || '1111',
-        passcodeIsDefault: data.passcodeIsDefault !== undefined ? data.passcodeIsDefault : true,
-      });
+      if (data) {
+        this.setState({
+          people: data.people || [],
+          shifts: data.shifts || [],
+          pendingChanges: data.pendingChanges || [],
+          notifPrefs: data.notifPrefs || this.state.notifPrefs,
+          adminPasscode: data.adminPasscode || '1111',
+          passcodeIsDefault: data.passcodeIsDefault !== undefined ? data.passcodeIsDefault : true,
+        });
+      }
+      this.hasLoadedRemote = true;
+      this.lastSynced = this.snapshotKeys();
       setTimeout(() => { this.applyingRemote = false; }, 0);
     });
   }
@@ -558,8 +562,7 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { if (this.unsub) this.unsub(); }
   componentDidUpdate() {
-    if (this.applyingRemote) { this.lastSynced = this.snapshotKeys(); return; }
-    const keys = ['people', 'shifts', 'pendingChanges', 'notifPrefs', 'adminPasscode', 'passcodeIsDefault'];
+    if (this.applyingRemote || !this.hasLoadedRemote) return;
     const current = this.snapshotKeys();
     if (this.lastSynced && current === this.lastSynced) return;
     this.lastSynced = current;
