@@ -675,29 +675,23 @@ class Component extends DCLogic {
     };
   }
 
-  ONESIGNAL_APP_ID = '647b4db1-de74-4b17-bd30-bf7ee596b4c5';
-  ONESIGNAL_REST_API_KEY = 'os_v2_app_mr5u3mo6orfrppjqx57olfvuyxaxn6xxdvwujlf72dtv2x4ub7ivjdaakhojscjn7kiv4yg23ma6knkssxat52jg7hk553e5btlqsyq';
+  NOTIFY_RELAY_URL = 'https://shift-sync-notify.accounts-558.workers.dev/';
 
   promptNotify = (title, body) => this.setState({ showNotifyPrompt: true, notifyTitle: title, notifyBody: body, notifySendError: '' });
   closeNotifyPrompt = () => this.setState({ showNotifyPrompt: false });
   notifyTitleChange = (e) => this.setState({ notifyTitle: e.target.value });
   notifyBodyChange = (e) => this.setState({ notifyBody: e.target.value });
   sendNotification = async () => {
-    if (!this.ONESIGNAL_REST_API_KEY) {
-      this.setState({ notifySendError: "Notifications aren't fully set up yet — ask your developer to add the OneSignal REST API Key." });
-      return;
-    }
     try {
-      await fetch('https://onesignal.com/api/v1/notifications', {
+      const res = await fetch(this.NOTIFY_RELAY_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json; charset=utf-8', Authorization: `Basic ${this.ONESIGNAL_REST_API_KEY}` },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          app_id: this.ONESIGNAL_APP_ID,
-          included_segments: ['Subscribed Users'],
-          headings: { en: this.state.notifyTitle || 'Shift Sync' },
-          contents: { en: this.state.notifyBody || 'The schedule was updated.' },
+          title: this.state.notifyTitle || 'Shift Sync',
+          message: this.state.notifyBody || 'The schedule was updated.',
         }),
       });
+      if (!res.ok) throw new Error('relay error');
       this.setState({ showNotifyPrompt: false });
       this.flashToast('Notification sent.');
     } catch (e) {
