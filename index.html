@@ -28,7 +28,7 @@
 </template>
 
 <div style="min-height: 100vh; width: 100%; background: oklch(93% 0.014 70); display: flex; justify-content: center; padding: 28px 12px; color: oklch(22% 0.02 50);">
-  <div style="width: 100%; max-width: 430px; background: oklch(99% 0.005 70); border-radius: 28px; box-shadow: 0 20px 50px -20px oklch(30% 0.03 50 / 0.35); overflow: hidden; display: flex; flex-direction: column; min-height: 780px; position: relative;">
+  <div style="{{ cardStyle }}">
 
     <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 22px 16px; border-bottom: 1px solid oklch(90% 0.015 60);">
       <div style="display: flex; align-items: center; gap: 10px;">
@@ -128,8 +128,9 @@
               <button onClick="{{ nextWeek }}" style="border: none; background: oklch(95% 0.02 60); border-radius: 10px; width: 36px; height: 36px; font-size: 16px; font-weight: 700; cursor: pointer;">›</button>
             </div>
 
+            <div style="{{ weekGridStyle }}">
             <sc-for list="{{ weekDays }}" as="day" hint-placeholder-count="7">
-              <div style="margin-bottom: 16px;">
+              <div style="{{ day.columnStyle }}">
                 <div style="{{ day.headerStyle }}">{{ day.label }}</div>
                 <sc-if value="{{ day.empty }}" hint-placeholder-val="{{ false }}">
                   <div style="padding: 10px 2px; color: oklch(58% 0.02 60); font-size: 13px;">No shifts</div>
@@ -152,6 +153,7 @@
                 </sc-for>
               </div>
             </sc-for>
+            </div>
           </sc-if>
 
           <sc-if value="{{ viewIsMonth }}" hint-placeholder-val="{{ false }}">
@@ -300,8 +302,8 @@
     </div>
 
     <sc-if value="{{ showShiftForm }}" hint-placeholder-val="{{ false }}">
-      <div style="position: absolute; inset: 0; background: oklch(20% 0.02 50 / 0.45); display: flex; align-items: flex-end; z-index: 10;">
-        <div style="background: white; width: 100%; border-radius: 22px 22px 0 0; padding: 22px 22px 26px; max-height: 88%; overflow-y: auto;">
+      <div style="{{ sheetOverlayStyle }}">
+        <div style="{{ sheetPanelStyle }}">
           <div style="font-weight: 800; font-size: 17px; margin-bottom: 16px;">{{ formTitle }}</div>
 
           <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Who</div>
@@ -342,39 +344,43 @@
           <sc-if value="{{ isAddingShift }}" hint-placeholder-val="{{ true }}">
             <sc-for list="{{ formRows }}" as="row" hint-placeholder-count="1">
               <div style="border: 1px solid oklch(90% 0.015 60); border-radius: 14px; padding: 14px; margin-bottom: 12px; position: relative;">
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-                  <div style="font-size: 12px; font-weight: 800; color: oklch(48% 0.02 60);">Day {{ row.rowNum }}</div>
-                  <sc-if value="{{ row.canRemove }}" hint-placeholder-val="{{ false }}">
-                    <button onClick="{{ row.onRemove }}" style="border: none; background: none; color: oklch(55% 0.16 25); font-size: 12px; font-weight: 700; cursor: pointer;">Remove</button>
-                  </sc-if>
-                </div>
-
-                <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Date</div>
-                <input type="date" value="{{ row.date }}" onChange="{{ row.onDateChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 10px; color: oklch(22% 0.02 50);" />
-
-                <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Shift time</div>
-                <select onChange="{{ row.onPresetChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 10px; color: oklch(22% 0.02 50); background: white;">
-                  <sc-for list="{{ row.presetOptions }}" as="opt" hint-placeholder-count="1">
-                    <option value="{{ opt.value }}">{{ opt.label }}</option>
-                  </sc-for>
-                </select>
-
-                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                  <div style="flex: 1;">
-                    <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Starts</div>
-                    <input type="time" value="{{ row.start }}" onChange="{{ row.onStartChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); color: oklch(22% 0.02 50);" />
-                  </div>
-                  <div style="flex: 1;">
-                    <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Ends</div>
-                    <input type="time" value="{{ row.end }}" onChange="{{ row.onEndChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); color: oklch(22% 0.02 50);" />
+                <div onClick="{{ row.onToggle }}" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; cursor: pointer;">
+                  <div style="font-size: 13px; font-weight: 800; color: oklch(22% 0.02 50);">{{ row.summary }}</div>
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <sc-if value="{{ row.canRemove }}" hint-placeholder-val="{{ false }}">
+                      <button onClick="{{ row.onRemove }}" style="border: none; background: none; color: oklch(55% 0.16 25); font-size: 12px; font-weight: 700; cursor: pointer;">Remove</button>
+                    </sc-if>
                   </div>
                 </div>
 
-                <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Role / station</div>
-                <input type="text" placeholder="e.g. Baker, Counter Staff" value="{{ row.role }}" onChange="{{ row.onRoleChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 10px; color: oklch(22% 0.02 50);" />
+                <sc-if value="{{ row.isExpanded }}" hint-placeholder-val="{{ true }}">
+                  <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Date</div>
+                  <input type="date" value="{{ row.date }}" onChange="{{ row.onDateChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 10px; color: oklch(22% 0.02 50);" />
 
-                <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Notes (optional)</div>
-                <input type="text" placeholder="e.g. picking up early" value="{{ row.notes }}" onChange="{{ row.onNotesChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); color: oklch(22% 0.02 50);" />
+                  <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Shift time</div>
+                  <select onChange="{{ row.onPresetChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 10px; color: oklch(22% 0.02 50); background: white;">
+                    <sc-for list="{{ row.presetOptions }}" as="opt" hint-placeholder-count="1">
+                      <option value="{{ opt.value }}">{{ opt.label }}</option>
+                    </sc-for>
+                  </select>
+
+                  <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <div style="flex: 1;">
+                      <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Starts</div>
+                      <input type="time" value="{{ row.start }}" onChange="{{ row.onStartChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); color: oklch(22% 0.02 50);" />
+                    </div>
+                    <div style="flex: 1;">
+                      <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Ends</div>
+                      <input type="time" value="{{ row.end }}" onChange="{{ row.onEndChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); color: oklch(22% 0.02 50);" />
+                    </div>
+                  </div>
+
+                  <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Role / station</div>
+                  <input type="text" placeholder="e.g. Baker, Counter Staff" value="{{ row.role }}" onChange="{{ row.onRoleChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 10px; color: oklch(22% 0.02 50);" />
+
+                  <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Notes (optional)</div>
+                  <input type="text" placeholder="e.g. picking up early" value="{{ row.notes }}" onChange="{{ row.onNotesChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); color: oklch(22% 0.02 50);" />
+                </sc-if>
               </div>
             </sc-for>
 
@@ -421,8 +427,8 @@
     </sc-if>
 
     <sc-if value="{{ showPersonForm }}" hint-placeholder-val="{{ false }}">
-      <div style="position: absolute; inset: 0; background: oklch(20% 0.02 50 / 0.45); display: flex; align-items: flex-end; z-index: 10;">
-        <div style="background: white; width: 100%; border-radius: 22px 22px 0 0; padding: 22px 22px 26px;">
+      <div style="{{ sheetOverlayStyle }}">
+        <div style="{{ sheetPanelStyleAuto }}">
           <div style="font-weight: 800; font-size: 17px; margin-bottom: 16px;">{{ personFormTitle }}</div>
 
           <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Name</div>
@@ -571,7 +577,9 @@ class Component extends DCLogic {
 
       showShiftForm: false, editingShiftId: null,
       formPersonId: null, formDate: this.iso(today), formStart: '09:00', formEnd: '17:00', formRole: '', formNotes: '',
-      formRows: [],
+      formRows: [], expandedRowId: null,
+
+      viewportWidth: (typeof window !== 'undefined' && window.innerWidth) || 400,
 
       shiftPresets: [],
       showPresetForm: false, presetFormRowId: null, presetFormLabel: '', presetFormStart: '09:00', presetFormEnd: '17:00', presetFormError: '',
@@ -612,8 +620,11 @@ class Component extends DCLogic {
     });
   }
 
+  handleResize = () => this.setState({ viewportWidth: window.innerWidth });
+
   componentDidMount() {
     this.pendingSave = false;
+    window.addEventListener('resize', this.handleResize);
     if (window.__shiftSyncDb) { this.startSync(); return; }
     window.addEventListener('shift-sync-db-ready', () => {
       this.startSync();
@@ -656,7 +667,7 @@ class Component extends DCLogic {
     };
     document.head.appendChild(s1);
   }
-  componentWillUnmount() { if (this.unsub) this.unsub(); }
+  componentWillUnmount() { if (this.unsub) this.unsub(); window.removeEventListener('resize', this.handleResize); }
   componentDidUpdate() {
     if (this.applyingRemote || !this.hasLoadedRemote) return;
     const current = this.snapshotKeys();
@@ -759,7 +770,7 @@ class Component extends DCLogic {
     const anchor = this.state.selectedDay;
     const firstPerson = this.state.people.find(p => p.canHaveShifts);
     const row = { id: this.uid('row'), date: anchor, start: '09:00', end: '17:00', role: '', notes: '' };
-    this.setState({ showShiftForm: true, editingShiftId: null, formPersonId: firstPerson ? firstPerson.id : null, formRows: [row] });
+    this.setState({ showShiftForm: true, editingShiftId: null, formPersonId: firstPerson ? firstPerson.id : null, formRows: [row], expandedRowId: row.id });
   };
   openEditShift = (id) => {
     const s = this.state.shifts.find(x => x.id === id);
@@ -779,10 +790,11 @@ class Component extends DCLogic {
       const last = s.formRows[s.formRows.length - 1];
       const nextDate = last ? this.iso(this.addDays(this.parseIso(last.date), 1)) : this.iso(new Date());
       const row = { id: this.uid('row'), date: nextDate, start: last ? last.start : '09:00', end: last ? last.end : '17:00', role: last ? last.role : '', notes: '' };
-      return { formRows: [...s.formRows, row] };
+      return { formRows: [...s.formRows, row], expandedRowId: row.id };
     });
   };
   removeFormRow = (id) => this.setState(s => ({ formRows: s.formRows.filter(r => r.id !== id) }));
+  toggleRowExpanded = (id) => this.setState(s => ({ expandedRowId: s.expandedRowId === id ? null : id }));
   updateFormRow = (id, field, value) => this.setState(s => ({ formRows: s.formRows.map(r => r.id === id ? { ...r, [field]: value } : r) }));
   rowFieldChange = (id, field) => (e) => this.updateFormRow(id, field, e.target.value);
 
@@ -912,6 +924,27 @@ class Component extends DCLogic {
 
   renderVals() {
     const s = this.state;
+    const vw = s.viewportWidth;
+    const isMobile = vw < 640;
+    const isTablet = vw >= 640 && vw < 1024;
+    const isDesktop = vw >= 1024;
+
+    const cardStyle = {
+      width: '100%',
+      maxWidth: isDesktop ? '1040px' : isTablet ? '700px' : '430px',
+      background: 'oklch(99% 0.005 70)', borderRadius: '28px',
+      boxShadow: '0 20px 50px -20px oklch(30% 0.03 50 / 0.35)', overflow: 'hidden',
+      display: 'flex', flexDirection: 'column',
+      minHeight: isMobile ? '780px' : '640px',
+      maxHeight: isMobile ? undefined : '92vh',
+      position: 'relative',
+    };
+    const sheetOverlayStyle = { position: 'absolute', inset: 0, background: 'oklch(20% 0.02 50 / 0.45)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', zIndex: 10, padding: isMobile ? 0 : '24px' };
+    const sheetPanelStyle = { background: 'white', width: '100%', maxWidth: isMobile ? undefined : '440px', borderRadius: isMobile ? '22px 22px 0 0' : '18px', padding: '22px 22px 26px', maxHeight: isMobile ? '88%' : '85vh', overflowY: 'auto' };
+    const sheetPanelStyleAuto = { background: 'white', width: '100%', maxWidth: isMobile ? undefined : '440px', borderRadius: isMobile ? '22px 22px 0 0' : '18px', padding: '22px 22px 26px', maxHeight: isMobile ? undefined : '85vh', overflowY: isMobile ? undefined : 'auto' };
+    const weekGridStyle = isMobile ? {} : { display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '10px', alignItems: 'start' };
+    const weekColumnStyle = isMobile ? { marginBottom: '16px' } : { marginBottom: 0, background: 'oklch(97% 0.01 70)', borderRadius: '12px', padding: '10px' };
+
     const isAdmin = !!s.currentAdminId;
     const isPrimary = this.isPrimaryCurrent();
     const today = new Date(); today.setHours(0,0,0,0);
@@ -939,7 +972,8 @@ class Component extends DCLogic {
       const d = this.addDays(s.weekAnchor, i);
       const iso = this.iso(d);
       const shiftsForDay = this.getShiftsForDate(iso);
-      weekDays.push({ iso, label: `${FULL_WEEKDAYS[d.getDay()]}, ${MONTH_NAMES[d.getMonth()]} ${d.getDate()}`, shifts: shiftsForDay, empty: shiftsForDay.length === 0,
+      weekDays.push({ iso, label: isMobile ? `${FULL_WEEKDAYS[d.getDay()]}, ${MONTH_NAMES[d.getMonth()]} ${d.getDate()}` : `${FULL_WEEKDAYS[d.getDay()].slice(0,3)} ${d.getDate()}`, shifts: shiftsForDay, empty: shiftsForDay.length === 0,
+        columnStyle: weekColumnStyle,
         headerStyle: { fontWeight: '700', fontSize: '13px', marginBottom: '8px', paddingBottom: '6px', borderBottom: `2px solid ${iso === todayIso ? TERRACOTTA : BORDER}`, color: iso === todayIso ? TERRACOTTA : 'inherit' } });
     }
     const weekEnd = this.addDays(s.weekAnchor, 6);
@@ -1001,29 +1035,43 @@ class Component extends DCLogic {
       .concat(s.shiftPresets.map(p => ({ value: p.id, label: p.label })))
       .concat([{ value: '__new__', label: '+ Add new shift time…' }]);
 
-    const formRows = s.formRows.map((r, idx) => ({
-      id: r.id,
-      rowNum: idx + 1,
-      date: r.date,
-      start: r.start,
-      end: r.end,
-      role: r.role,
-      notes: r.notes,
-      canRemove: s.formRows.length > 1,
-      onDateChange: this.rowFieldChange(r.id, 'date'),
-      onStartChange: this.rowFieldChange(r.id, 'start'),
-      onEndChange: this.rowFieldChange(r.id, 'end'),
-      onRoleChange: this.rowFieldChange(r.id, 'role'),
-      onNotesChange: this.rowFieldChange(r.id, 'notes'),
-      onPresetChange: this.applyPresetToRow(r.id),
-      onRemove: () => this.removeFormRow(r.id),
-      presetOptions: presetSelectOptions,
-    }));
+    const formRows = s.formRows.map((r, idx) => {
+      const isExpanded = s.expandedRowId === r.id || s.formRows.length === 1;
+      let summary = 'New day';
+      if (r.date) {
+        const d = this.parseIso(r.date);
+        summary = `${FULL_WEEKDAYS[d.getDay()].slice(0, 3)} ${MONTH_NAMES[d.getMonth()].slice(0, 3)} ${d.getDate()}`;
+        if (r.start && r.end) summary += ` · ${this.formatTime(r.start)}–${this.formatTime(r.end)}`;
+        if (r.role) summary += ` · ${r.role}`;
+      }
+      return {
+        id: r.id,
+        rowNum: idx + 1,
+        date: r.date,
+        start: r.start,
+        end: r.end,
+        role: r.role,
+        notes: r.notes,
+        canRemove: s.formRows.length > 1,
+        isExpanded,
+        summary,
+        onToggle: () => this.toggleRowExpanded(r.id),
+        onDateChange: this.rowFieldChange(r.id, 'date'),
+        onStartChange: this.rowFieldChange(r.id, 'start'),
+        onEndChange: this.rowFieldChange(r.id, 'end'),
+        onRoleChange: this.rowFieldChange(r.id, 'role'),
+        onNotesChange: this.rowFieldChange(r.id, 'notes'),
+        onPresetChange: this.applyPresetToRow(r.id),
+        onRemove: (e) => { e.stopPropagation(); this.removeFormRow(r.id); },
+        presetOptions: presetSelectOptions,
+      };
+    });
     const saveShiftBatchLabel = isPrimary
       ? (formRows.length > 1 ? `Save ${formRows.length} shifts` : 'Save shift')
       : (formRows.length > 1 ? `Submit ${formRows.length} for approval` : 'Submit for approval');
 
     return {
+      cardStyle, sheetOverlayStyle, sheetPanelStyle, sheetPanelStyleAuto, weekGridStyle,
       showAdminSignIn: !isAdmin,
       roleLabel: isAdmin ? (isPrimary ? 'Admin' : `Admin — ${this.currentAdmin().name}`) : 'Viewer',
       roleBadgeStyle: { fontSize: '11px', fontWeight: '800', padding: '5px 10px', borderRadius: '999px', background: isAdmin ? 'oklch(93% 0.05 40)' : NEUTRAL_BG, color: isAdmin ? TERRACOTTA : MUTED },
