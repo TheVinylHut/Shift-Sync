@@ -549,7 +549,7 @@ const MUTED = 'oklch(48% 0.02 60)';
 const TERRACOTTA = 'oklch(58% 0.15 35)';
 const DANGER = 'oklch(55% 0.16 25)';
 
-const WEEKDAY_LABELS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const WEEKDAY_LABELS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const FULL_WEEKDAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
@@ -707,7 +707,7 @@ class Component extends DCLogic {
   parseIso(s) { const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
   addDays(d,n) { const r=new Date(d); r.setDate(r.getDate()+n); return r; }
   addMonths(d,n) { const r=new Date(d); r.setMonth(r.getMonth()+n); return r; }
-  startOfWeek(d) { const r=new Date(d); const dow=r.getDay(); const diff=dow===0?-6:1-dow; r.setDate(r.getDate()+diff); r.setHours(0,0,0,0); return r; }
+  startOfWeek(d) { const r=new Date(d); r.setDate(r.getDate() - r.getDay()); r.setHours(0,0,0,0); return r; }
   formatTime(t) { const [h,m]=t.split(':').map(Number); const period=h>=12?'PM':'AM'; let hh=h%12; if(hh===0) hh=12; return `${hh}:${String(m).padStart(2,'0')} ${period}`; }
   hoursLabel(start,end) { const [sh,sm]=start.split(':').map(Number); const [eh,em]=end.split(':').map(Number); let mins=(eh*60+em)-(sh*60+sm); if(mins<0) mins+=24*60; const hrs=mins/60; return Number.isInteger(hrs) ? `${hrs} hrs` : `${hrs.toFixed(1)} hrs`; }
 
