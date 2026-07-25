@@ -884,6 +884,9 @@ class Component extends DCLogic {
   }
 
   saveShift = () => {
+    if (this.isSavingShift) return;
+    this.isSavingShift = true;
+    setTimeout(() => { this.isSavingShift = false; }, 800);
     const { editingShiftId, formPersonId } = this.state;
     if (!formPersonId) return;
     const isPrimary = this.isPrimaryCurrent();
