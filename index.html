@@ -19,10 +19,18 @@
   <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
-      await OneSignal.init({ appId: "647b4db1-de74-4b17-bd30-bf7ee596b4c5" });
-      window.__oneSignalReady = true;
-      window.dispatchEvent(new Event('onesignal-ready'));
+      try {
+        await OneSignal.init({ appId: "647b4db1-de74-4b17-bd30-bf7ee596b4c5" });
+        window.__oneSignalReady = true;
+        window.dispatchEvent(new Event('onesignal-ready'));
+      } catch (e) {
+        console.error('OneSignal init failed', e);
+        window.dispatchEvent(new Event('onesignal-error'));
+      }
     });
+    setTimeout(function() {
+      if (!window.__oneSignalReady) window.dispatchEvent(new Event('onesignal-error'));
+    }, 6000);
   </script>
 </helmet>
 
@@ -430,6 +438,30 @@
       </div>
     </sc-if>
 
+    <sc-if value="{{ showNotifyPrompt }}" hint-placeholder-val="{{ false }}">
+      <div style="{{ sheetOverlayStyle }}">
+        <div style="{{ sheetPanelStyleAuto }}">
+          <div style="font-weight: 800; font-size: 16px; margin-bottom: 4px;">Send a notification?</div>
+          <div style="font-size: 13px; color: oklch(48% 0.02 60); margin-bottom: 14px;">Everyone with notifications enabled will get this.</div>
+
+          <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Title</div>
+          <input type="text" value="{{ notifyTitle }}" onChange="{{ onNotifyTitleChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 12px; color: oklch(22% 0.02 50);" />
+
+          <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Message</div>
+          <input type="text" value="{{ notifyBody }}" onChange="{{ onNotifyBodyChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 12px; color: oklch(22% 0.02 50);" />
+
+          <sc-if value="{{ notifySendError }}" hint-placeholder-val="{{ false }}">
+            <div style="color: oklch(55% 0.16 25); font-size: 12px; font-weight: 700; margin-bottom: 12px; line-height: 1.4;">{{ notifySendError }}</div>
+          </sc-if>
+
+          <div style="display: flex; gap: 10px;">
+            <button onClick="{{ onCloseNotifyPrompt }}" style="flex: 1; padding: 13px; font-size: 14px; font-weight: 700; border-radius: 12px; border: 2px solid oklch(88% 0.015 60); background: white; cursor: pointer;">Skip</button>
+            <button onClick="{{ onSendNotification }}" style="flex: 2; padding: 13px; font-size: 14px; font-weight: 700; color: white; background: oklch(58% 0.15 35); border: none; border-radius: 12px; cursor: pointer;">Send Notification</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
     <sc-if value="{{ showPresetForm }}" hint-placeholder-val="{{ false }}">
       <div style="position: absolute; inset: 0; background: oklch(20% 0.02 50 / 0.45); display: flex; align-items: center; justify-content: center; z-index: 30; padding: 24px;">
         <div style="background: white; border-radius: 18px; padding: 24px; width: 100%;">
@@ -625,10 +657,39 @@ class Component extends DCLogic {
 
       approvalToastText: '',
       pushPermission: 'loading',
+      showNotifyPrompt: false, notifyTitle: '', notifyBody: '', notifySendError: '',
     };
   }
 
   ONESIGNAL_APP_ID = '647b4db1-de74-4b17-bd30-bf7ee596b4c5';
+  ONESIGNAL_REST_API_KEY = '';
+
+  promptNotify = (title, body) => this.setState({ showNotifyPrompt: true, notifyTitle: title, notifyBody: body, notifySendError: '' });
+  closeNotifyPrompt = () => this.setState({ showNotifyPrompt: false });
+  notifyTitleChange = (e) => this.setState({ notifyTitle: e.target.value });
+  notifyBodyChange = (e) => this.setState({ notifyBody: e.target.value });
+  sendNotification = async () => {
+    if (!this.ONESIGNAL_REST_API_KEY) {
+      this.setState({ notifySendError: "Notifications aren't fully set up yet — ask your developer to add the OneSignal REST API Key." });
+      return;
+    }
+    try {
+      await fetch('https://onesignal.com/api/v1/notifications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json; charset=utf-8', Authorization: `Basic ${this.ONESIGNAL_REST_API_KEY}` },
+        body: JSON.stringify({
+          app_id: this.ONESIGNAL_APP_ID,
+          included_segments: ['Subscribed Users'],
+          headings: { en: this.state.notifyTitle || 'Shift Sync' },
+          contents: { en: this.state.notifyBody || 'The schedule was updated.' },
+        }),
+      });
+      this.setState({ showNotifyPrompt: false });
+      this.flashToast('Notification sent.');
+    } catch (e) {
+      this.setState({ notifySendError: 'Could not send — check your connection and try again.' });
+    }
+  };
 
   refreshPushPermission = async () => {
     if (!window.OneSignal) { this.setState({ pushPermission: 'unsupported' }); return; }
@@ -691,7 +752,10 @@ class Component extends DCLogic {
     this.pendingSave = false;
     window.addEventListener('resize', this.handleResize);
     if (window.__oneSignalReady) this.refreshPushPermission();
-    else window.addEventListener('onesignal-ready', this.refreshPushPermission, { once: true });
+    else {
+      window.addEventListener('onesignal-ready', this.refreshPushPermission, { once: true });
+      window.addEventListener('onesignal-error', () => this.setState({ pushPermission: 'unsupported' }), { once: true });
+    }
     if (window.__shiftSyncDb) { this.startSync(); return; }
     window.addEventListener('shift-sync-db-ready', () => {
       this.startSync();
@@ -944,6 +1008,8 @@ class Component extends DCLogic {
           this.pushSnapshot(next);
           return { shifts: next.shifts, showShiftForm: false, view: 'day', selectedDay: payload.date };
         });
+        const personName = this.personById(formPersonId).name;
+        this.promptNotify('Schedule updated', `${personName}'s shift on ${payload.date} was changed.`);
       } else {
         const admin = this.currentAdmin();
         const personName = this.personById(formPersonId).name;
@@ -966,7 +1032,8 @@ class Component extends DCLogic {
         this.pushSnapshot(next);
         return { shifts: next.shifts, showShiftForm: false, view: 'day', selectedDay: sortedDates[0] };
       });
-      this.flashToast(payloads.length > 1 ? `${payloads.length} shifts added.` : 'Shift added.');
+      const personName = this.personById(formPersonId).name;
+      this.promptNotify('Schedule updated', payloads.length > 1 ? `${personName} added ${payloads.length} new shifts.` : `${personName} was added to the schedule on ${sortedDates[0]}.`);
     } else {
       const admin = this.currentAdmin();
       const personName = this.personById(formPersonId).name;
@@ -977,7 +1044,10 @@ class Component extends DCLogic {
   };
   deleteShift = (id) => {
     if (this.isPrimaryCurrent()) {
-      this.setState(s => ({ shifts: s.shifts.filter(sh => sh.id !== id) }));
+      const sh = this.state.shifts.find(x => x.id === id);
+      const personName = sh ? this.personById(sh.personId).name : '';
+      this.setState(s => ({ shifts: s.shifts.filter(x => x.id !== id) }));
+      if (sh) this.promptNotify('Schedule updated', `${personName}'s shift on ${sh.date} was removed.`);
     } else {
       const admin = this.currentAdmin();
       const sh = this.state.shifts.find(x => x.id === id);
@@ -999,6 +1069,7 @@ class Component extends DCLogic {
       else if (change.type === 'delete') shifts = shifts.filter(sh => sh.id !== change.targetShiftId);
       return { shifts, pendingChanges: s.pendingChanges.filter(c => c.id !== id) };
     });
+    this.promptNotify('Schedule updated', change.summary);
   };
   declineChange = (id) => this.setState(s => ({ pendingChanges: s.pendingChanges.filter(c => c.id !== id) }));
 
@@ -1256,6 +1327,13 @@ class Component extends DCLogic {
       selfCodeConfirm: s.selfCodeConfirm, onSelfCodeConfirmChange: this.selfCodeConfirmChange,
       selfCodeError: s.selfCodeError, selfCodeSaved: s.selfCodeSaved,
       onSaveSelfCode: this.saveSelfCode,
+
+      showNotifyPrompt: s.showNotifyPrompt,
+      notifyTitle: s.notifyTitle, onNotifyTitleChange: this.notifyTitleChange,
+      notifyBody: s.notifyBody, onNotifyBodyChange: this.notifyBodyChange,
+      notifySendError: s.notifySendError,
+      onCloseNotifyPrompt: this.closeNotifyPrompt,
+      onSendNotification: this.sendNotification,
 
       showAddButton: isAdmin && s.activeTab === 'schedule' && !s.showShiftForm && shiftPeople.length > 0,
       openAddShift: this.openAddShift,
