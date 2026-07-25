@@ -15,6 +15,15 @@
     body { margin: 0; }
     * { box-sizing: border-box; font-family: 'Nunito', sans-serif; }
   </style>
+  <script defer src="https://cdn.onesignal.com/OneSignalSDK.page.js"></script>
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({ appId: "647b4db1-de74-4b17-bd30-bf7ee596b4c5" });
+      window.__oneSignalReady = true;
+      window.dispatchEvent(new Event('onesignal-ready'));
+    });
+  </script>
 </helmet>
 
 <template id="__bundler_thumbnail" data-bg-color="#efe9e2">
@@ -257,7 +266,20 @@
         <div style="font-weight: 800; font-size: 18px; margin-bottom: 16px;">Settings</div>
 
         <div style="margin-bottom: 24px;">
-          <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Notifications</div>
+          <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Push notifications</div>
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 4px; border-bottom: 1px solid oklch(92% 0.015 60); margin-bottom: 8px;">
+            <div>
+              <div style="font-weight: 700; font-size: 14px;">On this device</div>
+              <div style="font-size: 12px; color: oklch(48% 0.02 60);">{{ pushStatusText }}</div>
+            </div>
+            <sc-if value="{{ showEnablePushButton }}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{ onEnablePush }}" style="padding: 9px 14px; font-size: 12px; font-weight: 700; color: white; background: oklch(58% 0.15 35); border: none; border-radius: 8px; cursor: pointer;">Enable</button>
+            </sc-if>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 24px;">
+          <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Notify me about</div>
           <sc-for list="{{ notifItems }}" as="notif" hint-placeholder-count="3">
             <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 4px; border-bottom: 1px solid oklch(92% 0.015 60);">
               <div>
@@ -602,8 +624,28 @@ class Component extends DCLogic {
       showPresetForm: false, presetFormRowId: null, presetFormLabel: '', presetFormStart: '09:00', presetFormEnd: '17:00', presetFormError: '',
 
       approvalToastText: '',
+      pushPermission: 'loading',
     };
   }
+
+  ONESIGNAL_APP_ID = '647b4db1-de74-4b17-bd30-bf7ee596b4c5';
+
+  refreshPushPermission = async () => {
+    if (!window.OneSignal) { this.setState({ pushPermission: 'unsupported' }); return; }
+    try {
+      const optedIn = window.OneSignal.User.PushSubscription.optedIn;
+      this.setState({ pushPermission: optedIn ? 'granted' : 'default' });
+    } catch (e) {
+      this.setState({ pushPermission: 'unsupported' });
+    }
+  };
+  enablePush = () => {
+    if (!window.OneSignal) return;
+    window.OneSignal.Notifications.requestPermission().then(() => {
+      window.OneSignal.User.PushSubscription.optIn();
+      this.refreshPushPermission();
+    }).catch(() => this.refreshPushPermission());
+  };
 
   uid(prefix) { return prefix + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
 
@@ -648,6 +690,8 @@ class Component extends DCLogic {
   componentDidMount() {
     this.pendingSave = false;
     window.addEventListener('resize', this.handleResize);
+    if (window.__oneSignalReady) this.refreshPushPermission();
+    else window.addEventListener('onesignal-ready', this.refreshPushPermission, { once: true });
     if (window.__shiftSyncDb) { this.startSync(); return; }
     window.addEventListener('shift-sync-db-ready', () => {
       this.startSync();
@@ -1202,6 +1246,9 @@ class Component extends DCLogic {
       openAddPerson: this.openAddPerson,
 
       notifItems,
+      pushStatusText: s.pushPermission === 'granted' ? 'Notifications enabled' : s.pushPermission === 'unsupported' ? 'Not supported on this browser' : s.pushPermission === 'loading' ? 'Checking…' : 'Not enabled yet',
+      showEnablePushButton: s.pushPermission === 'default',
+      onEnablePush: this.enablePush,
       onLogout: this.logout,
       noPresets: s.shiftPresets.length === 0,
       presetList: s.shiftPresets.map(p => ({ ...p, onRemove: () => this.removePreset(p.id) })),
