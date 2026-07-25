@@ -28,6 +28,7 @@
         window.__oneSignalReady = true;
         window.dispatchEvent(new Event('onesignal-ready'));
       } catch (e) {
+        window.__oneSignalInitError = (e && e.message) ? e.message : String(e);
         console.error('OneSignal init failed', e);
         window.dispatchEvent(new Event('onesignal-error'));
       }
@@ -288,6 +289,12 @@
               <button onClick="{{ onEnablePush }}" style="padding: 9px 14px; font-size: 12px; font-weight: 700; color: white; background: oklch(58% 0.15 35); border: none; border-radius: 8px; cursor: pointer;">Enable</button>
             </sc-if>
           </div>
+          <sc-if value="{{ showForcePushButton }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ onForcePushPrompt }}" style="border: none; background: none; color: oklch(58% 0.15 35); font-size: 12px; font-weight: 700; cursor: pointer; padding: 4px;">Try the browser prompt again</button>
+            <sc-if value="{{ pushUnsupportedReason }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size: 11px; color: oklch(55% 0.02 60); margin-top: 2px;">{{ pushUnsupportedReason }}</div>
+            </sc-if>
+          </sc-if>
         </div>
 
         <div style="margin-bottom: 24px;">
@@ -695,14 +702,32 @@ class Component extends DCLogic {
     }
   };
 
+  isIosSafariNotInstalled() {
+    const ua = navigator.userAgent || '';
+    const isIos = /iphone|ipad|ipod/i.test(ua);
+    const isStandalone = window.navigator.standalone === true || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+    return isIos && !isStandalone;
+  }
   refreshPushPermission = async () => {
-    if (!window.OneSignal) { this.setState({ pushPermission: 'unsupported' }); return; }
+    if (this.isIosSafariNotInstalled()) { this.setState({ pushPermission: 'ios-install' }); return; }
+    if (!window.OneSignal) {
+      this.setState({ pushPermission: 'unsupported', pushUnsupportedReason: window.__oneSignalInitError || 'The notification service failed to load.' });
+      return;
+    }
     try {
       const optedIn = window.OneSignal.User.PushSubscription.optedIn;
       this.setState({ pushPermission: optedIn ? 'granted' : 'default' });
+      this.maybeAutoPrompt();
     } catch (e) {
-      this.setState({ pushPermission: 'unsupported' });
+      this.setState({ pushPermission: 'unsupported', pushUnsupportedReason: e && e.message ? e.message : String(e) });
     }
+  };
+  maybeAutoPrompt = () => {
+    if (this.state.pushPermission !== 'default') return;
+    if (typeof Notification === 'undefined' || Notification.permission !== 'default') return;
+    if (this.autoPrompted) return;
+    this.autoPrompted = true;
+    setTimeout(() => this.enablePush(), 1200);
   };
   enablePush = () => {
     if (!window.OneSignal) return;
@@ -710,6 +735,12 @@ class Component extends DCLogic {
       window.OneSignal.User.PushSubscription.optIn();
       this.refreshPushPermission();
     }).catch(() => this.refreshPushPermission());
+  };
+  forcePushPrompt = () => {
+    if (window.OneSignal) { this.enablePush(); return; }
+    if (typeof Notification !== 'undefined') {
+      Notification.requestPermission().then(() => this.refreshPushPermission());
+    }
   };
 
   uid(prefix) { return prefix + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
@@ -1321,9 +1352,15 @@ class Component extends DCLogic {
       openAddPerson: this.openAddPerson,
 
       notifItems,
-      pushStatusText: s.pushPermission === 'granted' ? 'Notifications enabled' : s.pushPermission === 'unsupported' ? 'Not supported on this browser' : s.pushPermission === 'loading' ? 'Checking…' : 'Not enabled yet',
+      pushStatusText: s.pushPermission === 'granted' ? 'Notifications enabled'
+        : s.pushPermission === 'ios-install' ? 'On iPhone, add this site to your Home Screen first (Share → Add to Home Screen), then open it from there to enable notifications.'
+        : s.pushPermission === 'unsupported' ? 'Not supported on this browser'
+        : s.pushPermission === 'loading' ? 'Checking…' : 'Not enabled yet',
       showEnablePushButton: s.pushPermission === 'default',
       onEnablePush: this.enablePush,
+      showForcePushButton: s.pushPermission === 'unsupported',
+      onForcePushPrompt: this.forcePushPrompt,
+      pushUnsupportedReason: s.pushUnsupportedReason || '',
       onLogout: this.logout,
       noPresets: s.shiftPresets.length === 0,
       presetList: s.shiftPresets.map(p => ({ ...p, onRemove: () => this.removePreset(p.id) })),
