@@ -557,11 +557,17 @@ class Component extends DCLogic {
     document.head.appendChild(s1);
   }
   componentWillUnmount() { if (this.unsub) this.unsub(); }
-  componentDidUpdate(prevProps, prevState) {
-    if (this.applyingRemote || !prevState) return;
+  componentDidUpdate() {
+    if (this.applyingRemote) { this.lastSynced = this.snapshotKeys(); return; }
     const keys = ['people', 'shifts', 'pendingChanges', 'notifPrefs', 'adminPasscode', 'passcodeIsDefault'];
-    const changed = keys.some(k => JSON.stringify(prevState[k]) !== JSON.stringify(this.state[k]));
-    if (changed) this.pushToRemote();
+    const current = this.snapshotKeys();
+    if (this.lastSynced && current === this.lastSynced) return;
+    this.lastSynced = current;
+    this.pushToRemote();
+  }
+  snapshotKeys() {
+    const keys = ['people', 'shifts', 'pendingChanges', 'notifPrefs', 'adminPasscode', 'passcodeIsDefault'];
+    return JSON.stringify(keys.map(k => this.state[k]));
   }
 
   iso(d) { const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${day}`; }
