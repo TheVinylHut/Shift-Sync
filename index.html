@@ -20,7 +20,11 @@
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
       try {
-        await OneSignal.init({ appId: "647b4db1-de74-4b17-bd30-bf7ee596b4c5" });
+        await OneSignal.init({
+          appId: "647b4db1-de74-4b17-bd30-bf7ee596b4c5",
+          serviceWorkerPath: "OneSignalSDKWorker.js",
+          serviceWorkerParam: { scope: "/Shift-Sync/" },
+        });
         window.__oneSignalReady = true;
         window.dispatchEvent(new Event('onesignal-ready'));
       } catch (e) {
