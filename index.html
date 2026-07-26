@@ -52,10 +52,10 @@
   </svg>
 </template>
 
-<div style="min-height: 100vh; width: 100%; background: oklch(93% 0.014 70); display: flex; justify-content: center; padding: 28px 12px; color: oklch(22% 0.02 50);">
+<div style="{{ themeStyle }}">
   <div style="{{ cardStyle }}">
 
-    <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 22px 16px; border-bottom: 1px solid oklch(90% 0.015 60);">
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 22px 16px; border-bottom: 1px solid var(--border);">
       <div style="display: flex; align-items: center; gap: 10px;">
         <div style="width: 26px; height: 24px; border-radius: 7px; background: white; border: 2px solid oklch(58% 0.15 35); overflow: hidden; position: relative; flex-shrink: 0;">
           <div style="height: 7px; background: oklch(58% 0.15 35); display: flex; align-items: center; justify-content: center; gap: 3px;">
@@ -69,21 +69,21 @@
       <div style="display: flex; align-items: center; gap: 8px;">
         <div style="{{ roleBadgeStyle }}">{{ roleLabel }}</div>
         <sc-if value="{{ showAdminSignIn }}" hint-placeholder-val="{{ true }}">
-          <button onClick="{{ onOpenAdminPrompt }}" style="border: none; background: none; color: oklch(70% 0.015 60); font-size: 11px; font-weight: 600; cursor: pointer; padding: 2px;">Admin sign-in</button>
+          <button onClick="{{ onOpenAdminPrompt }}" style="border: none; background: none; color: var(--muted); font-size: 11px; font-weight: 600; cursor: pointer; padding: 2px;">Admin sign-in</button>
         </sc-if>
       </div>
     </div>
 
     <sc-if value="{{ showApprovalToast }}" hint-placeholder-val="{{ false }}">
-      <div style="background: oklch(93% 0.05 40); color: oklch(45% 0.13 35); font-size: 13px; font-weight: 700; text-align: center; padding: 10px;">{{ approvalToastText }}</div>
+      <div style="background: var(--accent-soft); color: var(--accent-text); font-size: 13px; font-weight: 700; text-align: center; padding: 10px;">{{ approvalToastText }}</div>
     </sc-if>
 
     <div style="flex: 1; overflow-y: auto; padding: 18px 20px 90px;">
 
       <sc-if value="{{ tabIsSchedule }}" hint-placeholder-val="{{ true }}">
         <sc-if value="{{ noShiftPeople }}" hint-placeholder-val="{{ true }}">
-          <div style="text-align: center; padding: 60px 16px; color: oklch(48% 0.02 60);">
-            <div style="font-weight: 800; font-size: 16px; color: oklch(22% 0.02 50); margin-bottom: 8px;">No one's on the schedule yet</div>
+          <div style="text-align: center; padding: 60px 16px; color: var(--muted);">
+            <div style="font-weight: 800; font-size: 16px; color: var(--text); margin-bottom: 8px;">No one's on the schedule yet</div>
             <div style="font-size: 14px; line-height: 1.5;">Add whoever works shifts (starting with yourself) in the People tab.</div>
             <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
               <button onClick="{{ goPeople }}" style="margin-top: 16px; padding: 12px 20px; font-size: 14px; font-weight: 700; color: white; background: oklch(58% 0.15 35); border: none; border-radius: 12px; cursor: pointer;">Go to People</button>
@@ -92,7 +92,7 @@
         </sc-if>
 
         <sc-if value="{{ hasShiftPeople }}" hint-placeholder-val="{{ false }}">
-          <div style="display: flex; background: oklch(95% 0.02 60); border-radius: 12px; padding: 4px; gap: 4px; margin-bottom: 16px;">
+          <div style="display: flex; background: var(--surface); border-radius: 12px; padding: 4px; gap: 4px; margin-bottom: 16px;">
             <button onClick="{{ setViewDay }}" style="{{ dayTabStyle }}">Day</button>
             <button onClick="{{ setViewWeek }}" style="{{ weekTabStyle }}">Week</button>
             <button onClick="{{ setViewMonth }}" style="{{ monthTabStyle }}">Month</button>
@@ -111,32 +111,32 @@
 
           <sc-if value="{{ viewIsDay }}" hint-placeholder-val="{{ false }}">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
-              <button onClick="{{ prevDay }}" style="border: none; background: oklch(95% 0.02 60); border-radius: 10px; width: 36px; height: 36px; font-size: 16px; font-weight: 700; cursor: pointer;">‹</button>
+              <button onClick="{{ prevDay }}" style="border: none; background: var(--surface); border-radius: 10px; width: 36px; height: 36px; font-size: 16px; font-weight: 700; cursor: pointer;">‹</button>
               <div style="text-align: center;">
                 <div style="font-weight: 700; font-size: 15px;">{{ dayLabel }}</div>
                 <button onClick="{{ todayDay }}" style="border: none; background: none; color: oklch(58% 0.15 35); font-size: 12px; font-weight: 700; cursor: pointer; padding: 2px;">Today</button>
               </div>
-              <button onClick="{{ nextDay }}" style="border: none; background: oklch(95% 0.02 60); border-radius: 10px; width: 36px; height: 36px; font-size: 16px; font-weight: 700; cursor: pointer;">›</button>
+              <button onClick="{{ nextDay }}" style="border: none; background: var(--surface); border-radius: 10px; width: 36px; height: 36px; font-size: 16px; font-weight: 700; cursor: pointer;">›</button>
             </div>
 
             <sc-if value="{{ dayShiftsEmpty }}" hint-placeholder-val="{{ false }}">
-              <div style="text-align: center; padding: 40px 10px; color: oklch(55% 0.02 60); font-size: 14px;">No shifts scheduled.</div>
+              <div style="text-align: center; padding: 40px 10px; color: var(--muted); font-size: 14px;">No shifts scheduled.</div>
             </sc-if>
             <sc-for list="{{ dayShifts }}" as="shift" hint-placeholder-count="2">
               <div style="{{ shift.cardStyle }}">
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                   <div style="font-weight: 800; font-size: 15px;">{{ shift.personName }}</div>
-                  <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60);">{{ shift.hoursText }}</div>
+                  <div style="font-size: 12px; font-weight: 700; color: var(--muted);">{{ shift.hoursText }}</div>
                 </div>
-                <div style="font-size: 14px; color: oklch(48% 0.02 60); margin-top: 2px;">{{ shift.roleText }}</div>
+                <div style="font-size: 14px; color: var(--muted); margin-top: 2px;">{{ shift.roleText }}</div>
                 <div style="font-size: 15px; font-weight: 700; margin-top: 6px;">{{ shift.timeText }}</div>
                 <sc-if value="{{ shift.hasNotes }}" hint-placeholder-val="{{ false }}">
-                  <div style="font-size: 13px; color: oklch(48% 0.02 60); margin-top: 4px; font-style: italic;">{{ shift.notes }}</div>
+                  <div style="font-size: 13px; color: var(--muted); margin-top: 4px; font-style: italic;">{{ shift.notes }}</div>
                 </sc-if>
                 <sc-if value="{{ shift.canEdit }}" hint-placeholder-val="{{ false }}">
                   <div style="display: flex; gap: 8px; margin-top: 10px;">
-                    <button onClick="{{ shift.onEdit }}" style="flex: 1; padding: 8px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid oklch(88% 0.015 60); background: white; cursor: pointer;">Edit</button>
-                    <button onClick="{{ shift.onDelete }}" style="flex: 1; padding: 8px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid oklch(88% 0.015 60); background: white; color: oklch(55% 0.16 25); cursor: pointer;">Delete</button>
+                    <button onClick="{{ shift.onEdit }}" style="flex: 1; padding: 8px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); cursor: pointer;">Edit</button>
+                    <button onClick="{{ shift.onDelete }}" style="flex: 1; padding: 8px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--danger); cursor: pointer;">Delete</button>
                   </div>
                 </sc-if>
               </div>
@@ -145,12 +145,12 @@
 
           <sc-if value="{{ viewIsWeek }}" hint-placeholder-val="{{ false }}">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
-              <button onClick="{{ prevWeek }}" style="border: none; background: oklch(95% 0.02 60); border-radius: 10px; width: 36px; height: 36px; font-size: 16px; font-weight: 700; cursor: pointer;">‹</button>
+              <button onClick="{{ prevWeek }}" style="border: none; background: var(--surface); border-radius: 10px; width: 36px; height: 36px; font-size: 16px; font-weight: 700; cursor: pointer;">‹</button>
               <div style="text-align: center;">
                 <div style="font-weight: 700; font-size: 15px;">{{ weekRangeLabel }}</div>
                 <button onClick="{{ thisWeek }}" style="border: none; background: none; color: oklch(58% 0.15 35); font-size: 12px; font-weight: 700; cursor: pointer; padding: 2px;">This week</button>
               </div>
-              <button onClick="{{ nextWeek }}" style="border: none; background: oklch(95% 0.02 60); border-radius: 10px; width: 36px; height: 36px; font-size: 16px; font-weight: 700; cursor: pointer;">›</button>
+              <button onClick="{{ nextWeek }}" style="border: none; background: var(--surface); border-radius: 10px; width: 36px; height: 36px; font-size: 16px; font-weight: 700; cursor: pointer;">›</button>
             </div>
 
             <div style="{{ weekGridStyle }}">
@@ -158,20 +158,20 @@
               <div style="{{ day.columnStyle }}">
                 <div style="{{ day.headerStyle }}">{{ day.label }}</div>
                 <sc-if value="{{ day.empty }}" hint-placeholder-val="{{ false }}">
-                  <div style="padding: 10px 2px; color: oklch(58% 0.02 60); font-size: 13px;">No shifts</div>
+                  <div style="padding: 10px 2px; color: var(--muted); font-size: 13px;">No shifts</div>
                 </sc-if>
                 <sc-for list="{{ day.shifts }}" as="shift" hint-placeholder-count="1">
                   <div style="{{ shift.cardStyle }}">
                     <div style="display: flex; align-items: center; justify-content: space-between;">
                       <div style="font-weight: 800; font-size: 14px;">{{ shift.personName }}</div>
-                      <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60);">{{ shift.hoursText }}</div>
+                      <div style="font-size: 12px; font-weight: 700; color: var(--muted);">{{ shift.hoursText }}</div>
                     </div>
-                    <div style="font-size: 13px; color: oklch(48% 0.02 60);">{{ shift.roleText }}</div>
+                    <div style="font-size: 13px; color: var(--muted);">{{ shift.roleText }}</div>
                     <div style="font-size: 14px; font-weight: 700; margin-top: 4px;">{{ shift.timeText }}</div>
                     <sc-if value="{{ shift.canEdit }}" hint-placeholder-val="{{ false }}">
                       <div style="display: flex; gap: 8px; margin-top: 8px;">
-                        <button onClick="{{ shift.onEdit }}" style="flex: 1; padding: 7px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid oklch(88% 0.015 60); background: white; cursor: pointer;">Edit</button>
-                        <button onClick="{{ shift.onDelete }}" style="flex: 1; padding: 7px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid oklch(88% 0.015 60); background: white; color: oklch(55% 0.16 25); cursor: pointer;">Delete</button>
+                        <button onClick="{{ shift.onEdit }}" style="flex: 1; padding: 7px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); cursor: pointer;">Edit</button>
+                        <button onClick="{{ shift.onDelete }}" style="flex: 1; padding: 7px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--danger); cursor: pointer;">Delete</button>
                       </div>
                     </sc-if>
                   </div>
@@ -183,17 +183,17 @@
 
           <sc-if value="{{ viewIsMonth }}" hint-placeholder-val="{{ false }}">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
-              <button onClick="{{ prevMonth }}" style="border: none; background: oklch(95% 0.02 60); border-radius: 10px; width: 36px; height: 36px; font-size: 16px; font-weight: 700; cursor: pointer;">‹</button>
+              <button onClick="{{ prevMonth }}" style="border: none; background: var(--surface); border-radius: 10px; width: 36px; height: 36px; font-size: 16px; font-weight: 700; cursor: pointer;">‹</button>
               <div style="text-align: center;">
                 <div style="font-weight: 700; font-size: 15px;">{{ monthLabel }}</div>
                 <button onClick="{{ thisMonth }}" style="border: none; background: none; color: oklch(58% 0.15 35); font-size: 12px; font-weight: 700; cursor: pointer; padding: 2px;">Today</button>
               </div>
-              <button onClick="{{ nextMonth }}" style="border: none; background: oklch(95% 0.02 60); border-radius: 10px; width: 36px; height: 36px; font-size: 16px; font-weight: 700; cursor: pointer;">›</button>
+              <button onClick="{{ nextMonth }}" style="border: none; background: var(--surface); border-radius: 10px; width: 36px; height: 36px; font-size: 16px; font-weight: 700; cursor: pointer;">›</button>
             </div>
 
             <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 6px;">
               <sc-for list="{{ weekdayLabels }}" as="wd" hint-placeholder-count="7">
-                <div style="text-align: center; font-size: 11px; font-weight: 700; color: oklch(55% 0.02 60);">{{ wd }}</div>
+                <div style="text-align: center; font-size: 11px; font-weight: 700; color: var(--muted);">{{ wd }}</div>
               </sc-for>
             </div>
 
@@ -212,23 +212,23 @@
               </div>
             </sc-for>
 
-            <div style="margin-top: 18px; border-top: 1px solid oklch(90% 0.015 60); padding-top: 14px;">
+            <div style="margin-top: 18px; border-top: 1px solid var(--border); padding-top: 14px;">
               <div style="font-weight: 700; font-size: 14px; margin-bottom: 10px;">{{ selectedDayLabel }}</div>
               <sc-if value="{{ selectedDayEmpty }}" hint-placeholder-val="{{ false }}">
-                <div style="color: oklch(55% 0.02 60); font-size: 13px;">No shifts scheduled.</div>
+                <div style="color: var(--muted); font-size: 13px;">No shifts scheduled.</div>
               </sc-if>
               <sc-for list="{{ selectedDayShifts }}" as="shift" hint-placeholder-count="1">
                 <div style="{{ shift.cardStyle }}">
                   <div style="display: flex; align-items: center; justify-content: space-between;">
                     <div style="font-weight: 800; font-size: 14px;">{{ shift.personName }}</div>
-                    <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60);">{{ shift.hoursText }}</div>
+                    <div style="font-size: 12px; font-weight: 700; color: var(--muted);">{{ shift.hoursText }}</div>
                   </div>
-                  <div style="font-size: 13px; color: oklch(48% 0.02 60);">{{ shift.roleText }}</div>
+                  <div style="font-size: 13px; color: var(--muted);">{{ shift.roleText }}</div>
                   <div style="font-size: 14px; font-weight: 700; margin-top: 4px;">{{ shift.timeText }}</div>
                   <sc-if value="{{ shift.canEdit }}" hint-placeholder-val="{{ false }}">
                     <div style="display: flex; gap: 8px; margin-top: 8px;">
-                      <button onClick="{{ shift.onEdit }}" style="flex: 1; padding: 7px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid oklch(88% 0.015 60); background: white; cursor: pointer;">Edit</button>
-                      <button onClick="{{ shift.onDelete }}" style="flex: 1; padding: 7px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid oklch(88% 0.015 60); background: white; color: oklch(55% 0.16 25); cursor: pointer;">Delete</button>
+                      <button onClick="{{ shift.onEdit }}" style="flex: 1; padding: 7px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); cursor: pointer;">Edit</button>
+                      <button onClick="{{ shift.onDelete }}" style="flex: 1; padding: 7px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--danger); cursor: pointer;">Delete</button>
                     </div>
                   </sc-if>
                 </div>
@@ -240,17 +240,17 @@
 
       <sc-if value="{{ tabIsPeople }}" hint-placeholder-val="{{ false }}">
         <div style="font-weight: 800; font-size: 18px; margin-bottom: 4px;">Who's in the circle</div>
-        <div style="font-size: 13px; color: oklch(48% 0.02 60); margin-bottom: 16px;">Admins can add and edit shifts. Everyone else can just view.</div>
+        <div style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">Admins can add and edit shifts. Everyone else can just view.</div>
 
         <sc-if value="{{ showApprovals }}" hint-placeholder-val="{{ false }}">
           <div style="margin-bottom: 18px;">
-            <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Waiting for your approval</div>
+            <div style="font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Waiting for your approval</div>
             <sc-for list="{{ pendingChanges }}" as="change" hint-placeholder-count="0">
-              <div style="padding: 12px 14px; background: oklch(93% 0.05 40); border-radius: 12px; margin-bottom: 8px;">
+              <div style="padding: 12px 14px; background: var(--accent-soft); border-radius: 12px; margin-bottom: 8px;">
                 <div style="font-size: 13px; font-weight: 700; margin-bottom: 8px;">{{ change.summary }}</div>
                 <div style="display: flex; gap: 8px;">
                   <button onClick="{{ change.onApprove }}" style="flex: 1; padding: 9px; font-size: 12px; font-weight: 700; border-radius: 8px; border: none; background: oklch(58% 0.15 35); color: white; cursor: pointer;">Approve</button>
-                  <button onClick="{{ change.onDecline }}" style="flex: 1; padding: 9px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid oklch(88% 0.015 60); background: white; cursor: pointer;">Decline</button>
+                  <button onClick="{{ change.onDecline }}" style="flex: 1; padding: 9px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); cursor: pointer;">Decline</button>
                 </div>
               </div>
             </sc-for>
@@ -258,18 +258,18 @@
         </sc-if>
 
         <sc-for list="{{ people }}" as="person" hint-placeholder-count="3">
-          <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: oklch(97% 0.01 70); border-radius: 12px; margin-bottom: 8px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: var(--surface2); border-radius: 12px; margin-bottom: 8px;">
             <div style="display: flex; align-items: center; gap: 10px;">
               <span style="{{ person.dotStyle }}"></span>
               <div>
                 <div style="font-weight: 700; font-size: 14px;">{{ person.name }}</div>
-                <div style="font-size: 12px; color: oklch(48% 0.02 60);">{{ person.summaryLabel }}</div>
+                <div style="font-size: 12px; color: var(--muted);">{{ person.summaryLabel }}</div>
               </div>
             </div>
             <div style="display: flex; gap: 12px; align-items: center;">
               <button onClick="{{ person.onEdit }}" style="border: none; background: none; color: oklch(58% 0.15 35); font-size: 12px; font-weight: 700; cursor: pointer;">Edit</button>
               <sc-if value="{{ person.canRemove }}" hint-placeholder-val="{{ false }}">
-                <button onClick="{{ person.onRemove }}" style="border: none; background: none; color: oklch(55% 0.16 25); font-size: 12px; font-weight: 700; cursor: pointer;">Remove</button>
+                <button onClick="{{ person.onRemove }}" style="border: none; background: none; color: var(--danger); font-size: 12px; font-weight: 700; cursor: pointer;">Remove</button>
               </sc-if>
             </div>
           </div>
@@ -279,14 +279,55 @@
       </sc-if>
 
       <sc-if value="{{ tabIsSettings }}" hint-placeholder-val="{{ false }}">
-        <div style="font-weight: 800; font-size: 18px; margin-bottom: 16px;">Settings</div>
+        <sc-if value="{{ settingsIsMenu }}" hint-placeholder-val="{{ true }}">
+          <div style="font-weight: 800; font-size: 18px; margin-bottom: 16px;">Settings</div>
 
-        <div style="margin-bottom: 24px;">
-          <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Push notifications</div>
-          <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 4px; border-bottom: 1px solid oklch(92% 0.015 60); margin-bottom: 8px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 4px; border-bottom: 1px solid var(--border); cursor: pointer;" onClick="{{ goSettingsPush }}">
+            <div>
+              <div style="font-weight: 700; font-size: 14px;">Push notifications</div>
+              <div style="font-size: 12px; color: var(--muted);">{{ pushStatusText }}</div>
+            </div>
+            <div style="color: var(--muted); font-size: 18px;">›</div>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 4px; border-bottom: 1px solid var(--border); cursor: pointer;" onClick="{{ goSettingsNotify }}">
+            <div style="font-weight: 700; font-size: 14px;">Notify me about</div>
+            <div style="color: var(--muted); font-size: 18px;">›</div>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 4px; border-bottom: 1px solid var(--border); cursor: pointer; margin-bottom: 24px;" onClick="{{ goSettingsAppearance }}">
+            <div style="font-weight: 700; font-size: 14px;">Appearance</div>
+            <div style="color: var(--muted); font-size: 18px;">›</div>
+          </div>
+
+          <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 4px; border-bottom: 1px solid var(--border); cursor: pointer;" onClick="{{ goSettingsPasscode }}">
+              <div style="font-weight: 700; font-size: 14px;">Your passcode</div>
+              <div style="color: var(--muted); font-size: 18px;">›</div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 4px; border-bottom: 1px solid var(--border); cursor: pointer;" onClick="{{ goSettingsPresets }}">
+              <div style="font-weight: 700; font-size: 14px;">Saved shift times</div>
+              <div style="color: var(--muted); font-size: 18px;">›</div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 4px; border-bottom: 1px solid var(--border); cursor: pointer;" onClick="{{ goSettingsPositions }}">
+              <div style="font-weight: 700; font-size: 14px;">Saved positions</div>
+              <div style="color: var(--muted); font-size: 18px;">›</div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 4px; border-bottom: 1px solid var(--border); cursor: pointer; margin-bottom: 24px;" onClick="{{ goSettingsWording }}">
+              <div style="font-weight: 700; font-size: 14px;">Notification wording</div>
+              <div style="color: var(--muted); font-size: 18px;">›</div>
+            </div>
+            <button onClick="{{ onLogout }}" style="width: 100%; padding: 13px; font-size: 14px; font-weight: 700; color: var(--muted); background: var(--surface); border: none; border-radius: 10px; cursor: pointer;">Sign out of admin</button>
+          </sc-if>
+        </sc-if>
+
+        <sc-if value="{{ settingsIsPush }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+            <button onClick="{{ backToSettingsMenu }}" style="border: none; background: none; color: var(--muted); font-size: 20px; cursor: pointer; padding: 0;">‹</button>
+            <div style="font-weight: 800; font-size: 18px;">Push notifications</div>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 4px; border-bottom: 1px solid var(--border); margin-bottom: 8px;">
             <div>
               <div style="font-weight: 700; font-size: 14px;">On this device</div>
-              <div style="font-size: 12px; color: oklch(48% 0.02 60);">{{ pushStatusText }}</div>
+              <div style="font-size: 12px; color: var(--muted);">{{ pushStatusText }}</div>
             </div>
             <sc-if value="{{ showEnablePushButton }}" hint-placeholder-val="{{ true }}">
               <button onClick="{{ onEnablePush }}" style="padding: 9px 14px; font-size: 12px; font-weight: 700; color: white; background: oklch(58% 0.15 35); border: none; border-radius: 8px; cursor: pointer;">Enable</button>
@@ -295,53 +336,111 @@
           <sc-if value="{{ showForcePushButton }}" hint-placeholder-val="{{ false }}">
             <button onClick="{{ onForcePushPrompt }}" style="border: none; background: none; color: oklch(58% 0.15 35); font-size: 12px; font-weight: 700; cursor: pointer; padding: 4px;">Try the browser prompt again</button>
             <sc-if value="{{ pushUnsupportedReason }}" hint-placeholder-val="{{ false }}">
-              <div style="font-size: 11px; color: oklch(55% 0.02 60); margin-top: 2px;">{{ pushUnsupportedReason }}</div>
+              <div style="font-size: 11px; color: var(--muted); margin-top: 2px;">{{ pushUnsupportedReason }}</div>
             </sc-if>
           </sc-if>
-        </div>
+        </sc-if>
 
-        <div style="margin-bottom: 24px;">
-          <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Notify me about</div>
+        <sc-if value="{{ settingsIsNotify }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+            <button onClick="{{ backToSettingsMenu }}" style="border: none; background: none; color: var(--muted); font-size: 20px; cursor: pointer; padding: 0;">‹</button>
+            <div style="font-weight: 800; font-size: 18px;">Notify me about</div>
+          </div>
           <sc-for list="{{ notifItems }}" as="notif" hint-placeholder-count="3">
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 4px; border-bottom: 1px solid oklch(92% 0.015 60);">
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 4px; border-bottom: 1px solid var(--border);">
               <div>
                 <div style="font-weight: 700; font-size: 14px;">{{ notif.label }}</div>
-                <div style="font-size: 12px; color: oklch(48% 0.02 60);">{{ notif.desc }}</div>
+                <div style="font-size: 12px; color: var(--muted);">{{ notif.desc }}</div>
               </div>
               <div onClick="{{ notif.onToggle }}" style="{{ notif.trackStyle }}">
                 <div style="{{ notif.thumbStyle }}"></div>
               </div>
             </div>
           </sc-for>
-        </div>
+        </sc-if>
 
-        <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
-          <div style="margin-bottom: 24px;">
-            <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Your passcode</div>
-            <input type="password" placeholder="New passcode" value="{{ selfCodeValue }}" onChange="{{ onSelfCodeChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 8px; color: oklch(22% 0.02 50); letter-spacing: 1px;" />
-            <input type="password" placeholder="Confirm new passcode" value="{{ selfCodeConfirm }}" onChange="{{ onSelfCodeConfirmChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 8px; color: oklch(22% 0.02 50); letter-spacing: 1px;" />
-            <sc-if value="{{ selfCodeError }}" hint-placeholder-val="{{ false }}">
-              <div style="color: oklch(55% 0.16 25); font-size: 12px; font-weight: 700; margin-bottom: 8px;">{{ selfCodeError }}</div>
-            </sc-if>
-            <sc-if value="{{ selfCodeSaved }}" hint-placeholder-val="{{ false }}">
-              <div style="color: oklch(56% 0.09 150); font-size: 12px; font-weight: 700; margin-bottom: 8px;">Passcode updated.</div>
-            </sc-if>
-            <button onClick="{{ onSaveSelfCode }}" style="width: 100%; padding: 12px; font-size: 13px; font-weight: 700; color: white; background: oklch(58% 0.15 35); border: none; border-radius: 10px; cursor: pointer;">Update my passcode</button>
+        <sc-if value="{{ settingsIsAppearance }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+            <button onClick="{{ backToSettingsMenu }}" style="border: none; background: none; color: var(--muted); font-size: 20px; cursor: pointer; padding: 0;">‹</button>
+            <div style="font-weight: 800; font-size: 18px;">Appearance</div>
           </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 4px;">
+            <div>
+              <div style="font-weight: 700; font-size: 14px;">Dark mode</div>
+              <div style="font-size: 12px; color: var(--muted);">Applies on this device</div>
+            </div>
+            <div onClick="{{ onToggleTheme }}" style="{{ themeToggleTrackStyle }}">
+              <div style="{{ themeToggleThumbStyle }}"></div>
+            </div>
+          </div>
+        </sc-if>
 
-          <div style="margin-bottom: 24px;">
-            <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Saved shift times</div>
-            <sc-if value="{{ noPresets }}" hint-placeholder-val="{{ true }}">
-              <div style="font-size: 13px; color: oklch(55% 0.02 60);">None saved yet — add one from the shift-add form.</div>
-            </sc-if>
-            <sc-for list="{{ presetList }}" as="preset" hint-placeholder-count="0">
-              <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 4px; border-bottom: 1px solid oklch(92% 0.015 60);">
-                <div style="font-size: 14px; font-weight: 700;">{{ preset.label }}</div>
-                <button onClick="{{ preset.onRemove }}" style="border: none; background: none; color: oklch(55% 0.16 25); font-size: 12px; font-weight: 700; cursor: pointer;">Remove</button>
-              </div>
-            </sc-for>
+        <sc-if value="{{ settingsIsPasscode }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+            <button onClick="{{ backToSettingsMenu }}" style="border: none; background: none; color: var(--muted); font-size: 20px; cursor: pointer; padding: 0;">‹</button>
+            <div style="font-weight: 800; font-size: 18px;">Your passcode</div>
           </div>
-          <button onClick="{{ onLogout }}" style="width: 100%; padding: 13px; font-size: 14px; font-weight: 700; color: oklch(48% 0.02 60); background: oklch(95% 0.02 60); border: none; border-radius: 10px; cursor: pointer;">Sign out of admin</button>
+          <input type="password" placeholder="New passcode" value="{{ selfCodeValue }}" onChange="{{ onSelfCodeChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid var(--border); margin-bottom: 8px; color: var(--text); letter-spacing: 1px;" />
+          <input type="password" placeholder="Confirm new passcode" value="{{ selfCodeConfirm }}" onChange="{{ onSelfCodeConfirmChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid var(--border); margin-bottom: 8px; color: var(--text); letter-spacing: 1px;" />
+          <sc-if value="{{ selfCodeError }}" hint-placeholder-val="{{ false }}">
+            <div style="color: var(--danger); font-size: 12px; font-weight: 700; margin-bottom: 8px;">{{ selfCodeError }}</div>
+          </sc-if>
+          <sc-if value="{{ selfCodeSaved }}" hint-placeholder-val="{{ false }}">
+            <div style="color: oklch(56% 0.09 150); font-size: 12px; font-weight: 700; margin-bottom: 8px;">Passcode updated.</div>
+          </sc-if>
+          <button onClick="{{ onSaveSelfCode }}" style="width: 100%; padding: 12px; font-size: 13px; font-weight: 700; color: white; background: oklch(58% 0.15 35); border: none; border-radius: 10px; cursor: pointer;">Update my passcode</button>
+        </sc-if>
+
+        <sc-if value="{{ settingsIsPresets }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+            <button onClick="{{ backToSettingsMenu }}" style="border: none; background: none; color: var(--muted); font-size: 20px; cursor: pointer; padding: 0;">‹</button>
+            <div style="font-weight: 800; font-size: 18px;">Saved shift times</div>
+          </div>
+          <sc-if value="{{ noPresets }}" hint-placeholder-val="{{ true }}">
+            <div style="font-size: 13px; color: var(--muted);">None saved yet — add one from the shift-add form.</div>
+          </sc-if>
+          <sc-for list="{{ presetList }}" as="preset" hint-placeholder-count="0">
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 4px; border-bottom: 1px solid var(--border);">
+              <div style="font-size: 14px; font-weight: 700;">{{ preset.label }}</div>
+              <button onClick="{{ preset.onRemove }}" style="border: none; background: none; color: var(--danger); font-size: 12px; font-weight: 700; cursor: pointer;">Remove</button>
+            </div>
+          </sc-for>
+        </sc-if>
+
+        <sc-if value="{{ settingsIsPositions }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+            <button onClick="{{ backToSettingsMenu }}" style="border: none; background: none; color: var(--muted); font-size: 20px; cursor: pointer; padding: 0;">‹</button>
+            <div style="font-weight: 800; font-size: 18px;">Saved positions</div>
+          </div>
+          <sc-if value="{{ noPositionPresets }}" hint-placeholder-val="{{ true }}">
+            <div style="font-size: 13px; color: var(--muted);">None saved yet — add one from the shift-add form.</div>
+          </sc-if>
+          <sc-for list="{{ positionPresetList }}" as="preset" hint-placeholder-count="0">
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 4px; border-bottom: 1px solid var(--border);">
+              <div style="font-size: 14px; font-weight: 700;">{{ preset.label }}</div>
+              <button onClick="{{ preset.onRemove }}" style="border: none; background: none; color: var(--danger); font-size: 12px; font-weight: 700; cursor: pointer;">Remove</button>
+            </div>
+          </sc-for>
+        </sc-if>
+
+        <sc-if value="{{ settingsIsWording }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+            <button onClick="{{ backToSettingsMenu }}" style="border: none; background: none; color: var(--muted); font-size: 20px; cursor: pointer; padding: 0;">‹</button>
+            <div style="font-weight: 800; font-size: 18px;">Notification wording</div>
+          </div>
+          <div style="font-size: 12px; color: var(--muted); margin-bottom: 12px; line-height: 1.4;">These fill in the title/message suggested when you save a shift. You can still edit them before sending.</div>
+
+          <div style="font-size: 13px; font-weight: 700; margin-bottom: 6px;">When adding a shift — title</div>
+          <input type="text" value="{{ notifyAddTitle }}" onChange="{{ onNotifyAddTitleChange }}" style="width: 100%; padding: 11px 14px; font-size: 14px; border-radius: 10px; border: 2px solid var(--border); margin-bottom: 10px; color: var(--text);" />
+          <div style="font-size: 13px; font-weight: 700; margin-bottom: 6px;">When adding a shift — message</div>
+          <input type="text" value="{{ notifyAddMessage }}" onChange="{{ onNotifyAddMessageChange }}" style="width: 100%; padding: 11px 14px; font-size: 14px; border-radius: 10px; border: 2px solid var(--border); margin-bottom: 4px; color: var(--text);" />
+          <div style="font-size: 11px; color: var(--muted); margin-bottom: 16px;">Use {name} and {range} as placeholders.</div>
+
+          <div style="font-size: 13px; font-weight: 700; margin-bottom: 6px;">When editing a shift — title</div>
+          <input type="text" value="{{ notifyEditTitle }}" onChange="{{ onNotifyEditTitleChange }}" style="width: 100%; padding: 11px 14px; font-size: 14px; border-radius: 10px; border: 2px solid var(--border); margin-bottom: 10px; color: var(--text);" />
+          <div style="font-size: 13px; font-weight: 700; margin-bottom: 6px;">When editing a shift — message</div>
+          <input type="text" value="{{ notifyEditMessage }}" onChange="{{ onNotifyEditMessageChange }}" style="width: 100%; padding: 11px 14px; font-size: 14px; border-radius: 10px; border: 2px solid var(--border); margin-bottom: 4px; color: var(--text);" />
+          <div style="font-size: 11px; color: var(--muted);">Use {name} and {date} as placeholders.</div>
         </sc-if>
       </sc-if>
     </div>
@@ -350,7 +449,7 @@
       <button onClick="{{ openAddShift }}" style="position: absolute; right: 20px; bottom: 88px; width: 56px; height: 56px; border-radius: 50%; background: oklch(58% 0.15 35); color: white; border: none; font-size: 26px; font-weight: 700; cursor: pointer; box-shadow: 0 10px 24px -8px oklch(40% 0.1 40 / 0.6); display: flex; align-items: center; justify-content: center;">+</button>
     </sc-if>
 
-    <div style="position: sticky; bottom: 0; display: flex; border-top: 1px solid oklch(90% 0.015 60); background: oklch(99% 0.005 70);">
+    <div style="position: sticky; bottom: 0; display: flex; border-top: 1px solid var(--border); background: var(--card-bg);">
       <button onClick="{{ goSchedule }}" style="{{ navScheduleStyle }}">Schedule</button>
       <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ goPeople }}" style="{{ navPeopleStyle }}">People</button>
@@ -363,7 +462,7 @@
         <div style="{{ sheetPanelStyle }}">
           <div style="font-weight: 800; font-size: 17px; margin-bottom: 16px;">{{ formTitle }}</div>
 
-          <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Who</div>
+          <div style="font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">Who</div>
           <div style="display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap;">
             <sc-for list="{{ formPersonOptions }}" as="opt" hint-placeholder-count="2">
               <button onClick="{{ opt.onClick }}" style="{{ opt.style }}">{{ opt.name }}</button>
@@ -371,51 +470,55 @@
           </div>
 
           <sc-if value="{{ isEditingShift }}" hint-placeholder-val="{{ false }}">
-            <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Date</div>
-            <input type="date" value="{{ formDate }}" onChange="{{ onFormDateChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 14px; color: oklch(22% 0.02 50);" />
+            <div style="font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">Date</div>
+            <input type="date" value="{{ formDate }}" onChange="{{ onFormDateChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid var(--border); margin-bottom: 14px; color: var(--text);" />
 
             <div style="display: flex; gap: 10px; margin-bottom: 14px;">
               <div style="flex: 1;">
-                <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Starts</div>
-                <input type="time" value="{{ formStart }}" onChange="{{ onFormStartChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); color: oklch(22% 0.02 50);" />
+                <div style="font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">Starts</div>
+                <input type="time" value="{{ formStart }}" onChange="{{ onFormStartChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid var(--border); color: var(--text);" />
               </div>
               <div style="flex: 1;">
-                <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Ends</div>
-                <input type="time" value="{{ formEnd }}" onChange="{{ onFormEndChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); color: oklch(22% 0.02 50);" />
+                <div style="font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">Ends</div>
+                <input type="time" value="{{ formEnd }}" onChange="{{ onFormEndChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid var(--border); color: var(--text);" />
               </div>
             </div>
 
-            <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Role / station</div>
-            <input type="text" placeholder="e.g. Baker, Counter Staff" value="{{ formRole }}" onChange="{{ onFormRoleChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 14px; color: oklch(22% 0.02 50);" />
+            <div style="font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">Role / station</div>
+            <select value="{{ formRole }}" onChange="{{ onFormPositionChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid var(--border); margin-bottom: 14px; color: var(--text); background: var(--card-bg);">
+              <sc-for list="{{ positionSelectOptions }}" as="opt" hint-placeholder-count="1">
+                <option value="{{ opt.value }}">{{ opt.label }}</option>
+              </sc-for>
+            </select>
 
-            <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Notes (optional)</div>
-            <input type="text" placeholder="e.g. picking up early" value="{{ formNotes }}" onChange="{{ onFormNotesChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 18px; color: oklch(22% 0.02 50);" />
+            <div style="font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">Notes (optional)</div>
+            <input type="text" placeholder="e.g. picking up early" value="{{ formNotes }}" onChange="{{ onFormNotesChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid var(--border); margin-bottom: 18px; color: var(--text);" />
 
             <div style="display: flex; gap: 10px;">
-              <button onClick="{{ closeForm }}" style="flex: 1; padding: 14px; font-size: 14px; font-weight: 700; border-radius: 12px; border: 2px solid oklch(88% 0.015 60); background: white; cursor: pointer;">Cancel</button>
+              <button onClick="{{ closeForm }}" style="flex: 1; padding: 14px; font-size: 14px; font-weight: 700; border-radius: 12px; border: 2px solid var(--border); background: var(--card-bg); cursor: pointer;">Cancel</button>
               <button onClick="{{ saveShift }}" style="flex: 2; padding: 14px; font-size: 14px; font-weight: 700; color: white; background: oklch(58% 0.15 35); border: none; border-radius: 12px; cursor: pointer;">{{ saveShiftLabel }}</button>
             </div>
-            <button onClick="{{ deleteShiftFromForm }}" style="width: 100%; margin-top: 10px; padding: 10px; font-size: 13px; font-weight: 700; color: oklch(55% 0.16 25); background: none; border: none; cursor: pointer;">{{ deleteShiftLabel }}</button>
+            <button onClick="{{ deleteShiftFromForm }}" style="width: 100%; margin-top: 10px; padding: 10px; font-size: 13px; font-weight: 700; color: var(--danger); background: none; border: none; cursor: pointer;">{{ deleteShiftLabel }}</button>
           </sc-if>
 
           <sc-if value="{{ isAddingShift }}" hint-placeholder-val="{{ true }}">
             <sc-for list="{{ formRows }}" as="row" hint-placeholder-count="1">
-              <div style="border: 1px solid oklch(90% 0.015 60); border-radius: 14px; padding: 14px; margin-bottom: 12px; position: relative;">
+              <div style="border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; position: relative;">
                 <div onClick="{{ row.onToggle }}" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; cursor: pointer;">
-                  <div style="font-size: 13px; font-weight: 800; color: oklch(22% 0.02 50);">{{ row.summary }}</div>
+                  <div style="font-size: 13px; font-weight: 800; color: var(--text);">{{ row.summary }}</div>
                   <div style="display: flex; align-items: center; gap: 12px;">
                     <sc-if value="{{ row.canRemove }}" hint-placeholder-val="{{ false }}">
-                      <button onClick="{{ row.onRemove }}" style="border: none; background: none; color: oklch(55% 0.16 25); font-size: 12px; font-weight: 700; cursor: pointer;">Remove</button>
+                      <button onClick="{{ row.onRemove }}" style="border: none; background: none; color: var(--danger); font-size: 12px; font-weight: 700; cursor: pointer;">Remove</button>
                     </sc-if>
                   </div>
                 </div>
 
                 <sc-if value="{{ row.isExpanded }}" hint-placeholder-val="{{ true }}">
-                  <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Date</div>
-                  <input type="date" value="{{ row.date }}" onChange="{{ row.onDateChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 10px; color: oklch(22% 0.02 50);" />
+                  <div style="font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">Date</div>
+                  <input type="date" value="{{ row.date }}" onChange="{{ row.onDateChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid var(--border); margin-bottom: 10px; color: var(--text);" />
 
-                  <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Shift time</div>
-                  <select onChange="{{ row.onPresetChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 10px; color: oklch(22% 0.02 50); background: white;">
+                  <div style="font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">Shift time</div>
+                  <select onChange="{{ row.onPresetChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid var(--border); margin-bottom: 10px; color: var(--text); background: var(--card-bg);">
                     <sc-for list="{{ row.presetOptions }}" as="opt" hint-placeholder-count="1">
                       <option value="{{ opt.value }}">{{ opt.label }}</option>
                     </sc-for>
@@ -423,28 +526,32 @@
 
                   <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                     <div style="flex: 1;">
-                      <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Starts</div>
-                      <input type="time" value="{{ row.start }}" onChange="{{ row.onStartChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); color: oklch(22% 0.02 50);" />
+                      <div style="font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">Starts</div>
+                      <input type="time" value="{{ row.start }}" onChange="{{ row.onStartChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid var(--border); color: var(--text);" />
                     </div>
                     <div style="flex: 1;">
-                      <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Ends</div>
-                      <input type="time" value="{{ row.end }}" onChange="{{ row.onEndChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); color: oklch(22% 0.02 50);" />
+                      <div style="font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">Ends</div>
+                      <input type="time" value="{{ row.end }}" onChange="{{ row.onEndChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid var(--border); color: var(--text);" />
                     </div>
                   </div>
 
-                  <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Role / station</div>
-                  <input type="text" placeholder="e.g. Baker, Counter Staff" value="{{ row.role }}" onChange="{{ row.onRoleChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 10px; color: oklch(22% 0.02 50);" />
+                  <div style="font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">Role / station</div>
+                  <select value="{{ row.role }}" onChange="{{ row.onPositionChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid var(--border); margin-bottom: 10px; color: var(--text); background: var(--card-bg);">
+                    <sc-for list="{{ row.positionOptions }}" as="opt" hint-placeholder-count="1">
+                      <option value="{{ opt.value }}">{{ opt.label }}</option>
+                    </sc-for>
+                  </select>
 
-                  <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Notes (optional)</div>
-                  <input type="text" placeholder="e.g. picking up early" value="{{ row.notes }}" onChange="{{ row.onNotesChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); color: oklch(22% 0.02 50);" />
+                  <div style="font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">Notes (optional)</div>
+                  <input type="text" placeholder="e.g. picking up early" value="{{ row.notes }}" onChange="{{ row.onNotesChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid var(--border); color: var(--text);" />
                 </sc-if>
               </div>
             </sc-for>
 
-            <button onClick="{{ addFormRow }}" style="width: 100%; padding: 12px; font-size: 13px; font-weight: 700; color: oklch(58% 0.15 35); background: oklch(95% 0.02 60); border: 2px dashed oklch(85% 0.02 50); border-radius: 12px; cursor: pointer; margin-bottom: 16px;">+ Add another day</button>
+            <button onClick="{{ addFormRow }}" style="width: 100%; padding: 12px; font-size: 13px; font-weight: 700; color: oklch(58% 0.15 35); background: var(--surface); border: 2px dashed var(--border); border-radius: 12px; cursor: pointer; margin-bottom: 16px;">+ Add another day</button>
 
             <div style="display: flex; gap: 10px;">
-              <button onClick="{{ closeForm }}" style="flex: 1; padding: 14px; font-size: 14px; font-weight: 700; border-radius: 12px; border: 2px solid oklch(88% 0.015 60); background: white; cursor: pointer;">Cancel</button>
+              <button onClick="{{ closeForm }}" style="flex: 1; padding: 14px; font-size: 14px; font-weight: 700; border-radius: 12px; border: 2px solid var(--border); background: var(--card-bg); cursor: pointer;">Cancel</button>
               <button onClick="{{ saveShift }}" style="flex: 2; padding: 14px; font-size: 14px; font-weight: 700; color: white; background: oklch(58% 0.15 35); border: none; border-radius: 12px; cursor: pointer;">{{ saveShiftBatchLabel }}</button>
             </div>
           </sc-if>
@@ -456,20 +563,20 @@
       <div style="{{ sheetOverlayStyle }}">
         <div style="{{ sheetPanelStyleAuto }}">
           <div style="font-weight: 800; font-size: 16px; margin-bottom: 4px;">Send a notification?</div>
-          <div style="font-size: 13px; color: oklch(48% 0.02 60); margin-bottom: 14px;">Everyone with notifications enabled will get this.</div>
+          <div style="font-size: 13px; color: var(--muted); margin-bottom: 14px;">Everyone with notifications enabled will get this.</div>
 
-          <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Title</div>
-          <input type="text" value="{{ notifyTitle }}" onChange="{{ onNotifyTitleChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 12px; color: oklch(22% 0.02 50);" />
+          <div style="font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">Title</div>
+          <input type="text" value="{{ notifyTitle }}" onChange="{{ onNotifyTitleChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid var(--border); margin-bottom: 12px; color: var(--text);" />
 
-          <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Message</div>
-          <input type="text" value="{{ notifyBody }}" onChange="{{ onNotifyBodyChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 12px; color: oklch(22% 0.02 50);" />
+          <div style="font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">Message</div>
+          <input type="text" value="{{ notifyBody }}" onChange="{{ onNotifyBodyChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid var(--border); margin-bottom: 12px; color: var(--text);" />
 
           <sc-if value="{{ notifySendError }}" hint-placeholder-val="{{ false }}">
-            <div style="color: oklch(55% 0.16 25); font-size: 12px; font-weight: 700; margin-bottom: 12px; line-height: 1.4;">{{ notifySendError }}</div>
+            <div style="color: var(--danger); font-size: 12px; font-weight: 700; margin-bottom: 12px; line-height: 1.4;">{{ notifySendError }}</div>
           </sc-if>
 
           <div style="display: flex; gap: 10px;">
-            <button onClick="{{ onCloseNotifyPrompt }}" style="flex: 1; padding: 13px; font-size: 14px; font-weight: 700; border-radius: 12px; border: 2px solid oklch(88% 0.015 60); background: white; cursor: pointer;">Skip</button>
+            <button onClick="{{ onCloseNotifyPrompt }}" style="flex: 1; padding: 13px; font-size: 14px; font-weight: 700; border-radius: 12px; border: 2px solid var(--border); background: var(--card-bg); cursor: pointer;">Skip</button>
             <button onClick="{{ onSendNotification }}" style="flex: 2; padding: 13px; font-size: 14px; font-weight: 700; color: white; background: oklch(58% 0.15 35); border: none; border-radius: 12px; cursor: pointer;">Send Notification</button>
           </div>
         </div>
@@ -478,30 +585,50 @@
 
     <sc-if value="{{ showPresetForm }}" hint-placeholder-val="{{ false }}">
       <div style="position: absolute; inset: 0; background: oklch(20% 0.02 50 / 0.45); display: flex; align-items: center; justify-content: center; z-index: 30; padding: 24px;">
-        <div style="background: white; border-radius: 18px; padding: 24px; width: 100%;">
+        <div style="background: var(--card-bg); border-radius: 18px; padding: 24px; width: 100%;">
           <div style="font-weight: 800; font-size: 16px; margin-bottom: 4px;">Add a shift time</div>
-          <div style="font-size: 13px; color: oklch(48% 0.02 60); margin-bottom: 14px;">Save a common shift time so you can pick it from the list next time.</div>
+          <div style="font-size: 13px; color: var(--muted); margin-bottom: 14px;">Save a common shift time so you can pick it from the list next time.</div>
 
-          <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Label (optional)</div>
-          <input type="text" placeholder="e.g. Morning" value="{{ presetFormLabel }}" onChange="{{ onPresetFormLabelChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 12px; color: oklch(22% 0.02 50);" />
+          <div style="font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">Label (optional)</div>
+          <input type="text" placeholder="e.g. Morning" value="{{ presetFormLabel }}" onChange="{{ onPresetFormLabelChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid var(--border); margin-bottom: 12px; color: var(--text);" />
 
           <div style="display: flex; gap: 10px; margin-bottom: 10px;">
             <div style="flex: 1;">
-              <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Starts</div>
-              <input type="time" value="{{ presetFormStart }}" onChange="{{ onPresetFormStartChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); color: oklch(22% 0.02 50);" />
+              <div style="font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">Starts</div>
+              <input type="time" value="{{ presetFormStart }}" onChange="{{ onPresetFormStartChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid var(--border); color: var(--text);" />
             </div>
             <div style="flex: 1;">
-              <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Ends</div>
-              <input type="time" value="{{ presetFormEnd }}" onChange="{{ onPresetFormEndChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); color: oklch(22% 0.02 50);" />
+              <div style="font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">Ends</div>
+              <input type="time" value="{{ presetFormEnd }}" onChange="{{ onPresetFormEndChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid var(--border); color: var(--text);" />
             </div>
           </div>
           <sc-if value="{{ presetFormError }}" hint-placeholder-val="{{ false }}">
-            <div style="color: oklch(55% 0.16 25); font-size: 13px; font-weight: 700; margin-bottom: 10px;">{{ presetFormError }}</div>
+            <div style="color: var(--danger); font-size: 13px; font-weight: 700; margin-bottom: 10px;">{{ presetFormError }}</div>
           </sc-if>
 
           <div style="display: flex; gap: 10px;">
-            <button onClick="{{ closePresetForm }}" style="flex: 1; padding: 13px; font-size: 14px; font-weight: 700; border-radius: 12px; border: 2px solid oklch(88% 0.015 60); background: white; cursor: pointer;">Cancel</button>
+            <button onClick="{{ closePresetForm }}" style="flex: 1; padding: 13px; font-size: 14px; font-weight: 700; border-radius: 12px; border: 2px solid var(--border); background: var(--card-bg); cursor: pointer;">Cancel</button>
             <button onClick="{{ savePreset }}" style="flex: 2; padding: 13px; font-size: 14px; font-weight: 700; color: white; background: oklch(58% 0.15 35); border: none; border-radius: 12px; cursor: pointer;">Save shift time</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showPositionForm }}" hint-placeholder-val="{{ false }}">
+      <div style="position: absolute; inset: 0; background: oklch(20% 0.02 50 / 0.45); display: flex; align-items: center; justify-content: center; z-index: 30; padding: 24px;">
+        <div style="background: var(--card-bg); border-radius: 18px; padding: 24px; width: 100%;">
+          <div style="font-weight: 800; font-size: 16px; margin-bottom: 4px;">Add a position</div>
+          <div style="font-size: 13px; color: var(--muted); margin-bottom: 14px;">Save a position so you can pick it from the list next time.</div>
+
+          <div style="font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">Position name</div>
+          <input type="text" placeholder="e.g. Baker, Counter Staff" value="{{ positionFormLabel }}" onChange="{{ onPositionFormLabelChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid var(--border); margin-bottom: 12px; color: var(--text);" />
+          <sc-if value="{{ positionFormError }}" hint-placeholder-val="{{ false }}">
+            <div style="color: var(--danger); font-size: 13px; font-weight: 700; margin-bottom: 10px;">{{ positionFormError }}</div>
+          </sc-if>
+
+          <div style="display: flex; gap: 10px;">
+            <button onClick="{{ closePositionForm }}" style="flex: 1; padding: 13px; font-size: 14px; font-weight: 700; border-radius: 12px; border: 2px solid var(--border); background: var(--card-bg); cursor: pointer;">Cancel</button>
+            <button onClick="{{ savePositionPreset }}" style="flex: 2; padding: 13px; font-size: 14px; font-weight: 700; color: white; background: oklch(58% 0.15 35); border: none; border-radius: 12px; cursor: pointer;">Save position</button>
           </div>
         </div>
       </div>
@@ -512,31 +639,31 @@
         <div style="{{ sheetPanelStyleAuto }}">
           <div style="font-weight: 800; font-size: 17px; margin-bottom: 16px;">{{ personFormTitle }}</div>
 
-          <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Name</div>
-          <input type="text" placeholder="e.g. Mom" value="{{ personFormName }}" onChange="{{ onPersonFormNameChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 14px; color: oklch(22% 0.02 50);" />
+          <div style="font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">Name</div>
+          <input type="text" placeholder="e.g. Mom" value="{{ personFormName }}" onChange="{{ onPersonFormNameChange }}" style="width: 100%; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid var(--border); margin-bottom: 14px; color: var(--text);" />
 
-          <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Access</div>
+          <div style="font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">Access</div>
           <div style="display: flex; gap: 8px; margin-bottom: 14px;">
             <button onClick="{{ setPersonFormAccessViewer }}" style="{{ personFormAccessViewerStyle }}">Can view only</button>
             <button onClick="{{ setPersonFormAccessAdmin }}" style="{{ personFormAccessAdminStyle }}">Can edit too</button>
           </div>
 
           <sc-if value="{{ personFormIsAdmin }}" hint-placeholder-val="{{ false }}">
-            <div style="font-size: 12px; font-weight: 700; color: oklch(48% 0.02 60); margin-bottom: 6px;">Their sign-in code</div>
+            <div style="font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px;">Their sign-in code</div>
             <div style="display: flex; gap: 8px; margin-bottom: 4px;">
-              <input type="text" placeholder="e.g. 4821" value="{{ personFormPasscode }}" onChange="{{ onPersonFormPasscodeChange }}" style="flex: 1; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); letter-spacing: 1px; font-weight: 700; color: oklch(22% 0.02 50);" />
-              <button onClick="{{ onGeneratePersonFormPasscode }}" style="padding: 0 14px; font-size: 12px; font-weight: 700; border-radius: 10px; border: 2px solid oklch(88% 0.015 60); background: white; cursor: pointer;">Generate</button>
+              <input type="text" placeholder="e.g. 4821" value="{{ personFormPasscode }}" onChange="{{ onPersonFormPasscodeChange }}" style="flex: 1; padding: 12px 14px; font-size: 14px; border-radius: 10px; border: 2px solid var(--border); letter-spacing: 1px; font-weight: 700; color: var(--text);" />
+              <button onClick="{{ onGeneratePersonFormPasscode }}" style="padding: 0 14px; font-size: 12px; font-weight: 700; border-radius: 10px; border: 2px solid var(--border); background: var(--card-bg); cursor: pointer;">Generate</button>
             </div>
             <sc-if value="{{ personFormPasscodeError }}" hint-placeholder-val="{{ false }}">
-              <div style="color: oklch(55% 0.16 25); font-size: 12px; font-weight: 700; margin-bottom: 8px;">{{ personFormPasscodeError }}</div>
+              <div style="color: var(--danger); font-size: 12px; font-weight: 700; margin-bottom: 8px;">{{ personFormPasscodeError }}</div>
             </sc-if>
-            <div style="font-size: 12px; color: oklch(55% 0.02 60); margin-bottom: 14px; line-height: 1.4;">Give them this code to sign in the first time — they'll be asked to set their own right after.</div>
+            <div style="font-size: 12px; color: var(--muted); margin-bottom: 14px; line-height: 1.4;">Give them this code to sign in the first time — they'll be asked to set their own right after.</div>
           </sc-if>
 
           <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 2px; margin-bottom: 18px;">
             <div>
               <div style="font-weight: 700; font-size: 14px;">Works shifts</div>
-              <div style="font-size: 12px; color: oklch(48% 0.02 60);">Shows up on the calendar</div>
+              <div style="font-size: 12px; color: var(--muted);">Shows up on the calendar</div>
             </div>
             <div onClick="{{ togglePersonFormCanShift }}" style="{{ personFormCanShiftTrackStyle }}">
               <div style="{{ personFormCanShiftThumbStyle }}"></div>
@@ -544,7 +671,7 @@
           </div>
 
           <div style="display: flex; gap: 10px;">
-            <button onClick="{{ closePersonForm }}" style="flex: 1; padding: 14px; font-size: 14px; font-weight: 700; border-radius: 12px; border: 2px solid oklch(88% 0.015 60); background: white; cursor: pointer;">Cancel</button>
+            <button onClick="{{ closePersonForm }}" style="flex: 1; padding: 14px; font-size: 14px; font-weight: 700; border-radius: 12px; border: 2px solid var(--border); background: var(--card-bg); cursor: pointer;">Cancel</button>
             <button onClick="{{ savePersonForm }}" style="flex: 2; padding: 14px; font-size: 14px; font-weight: 700; color: white; background: oklch(58% 0.15 35); border: none; border-radius: 12px; cursor: pointer;">Save</button>
           </div>
         </div>
@@ -553,15 +680,15 @@
 
     <sc-if value="{{ authStepIsPasscode }}" hint-placeholder-val="{{ false }}">
       <div style="position: absolute; inset: 0; background: oklch(20% 0.02 50 / 0.45); display: flex; align-items: center; justify-content: center; z-index: 20; padding: 24px;">
-        <div style="background: white; border-radius: 18px; padding: 24px; width: 100%;">
+        <div style="background: var(--card-bg); border-radius: 18px; padding: 24px; width: 100%;">
           <div style="font-weight: 800; font-size: 16px; margin-bottom: 4px;">Admin sign-in</div>
-          <div style="font-size: 13px; color: oklch(48% 0.02 60); margin-bottom: 14px;">Enter your admin passcode to manage shifts and people.</div>
-          <input type="password" placeholder="Passcode" value="{{ adminCodeValue }}" onChange="{{ onAdminCodeChange }}" style="width: 100%; padding: 13px 14px; font-size: 16px; border-radius: 12px; border: 2px solid oklch(88% 0.015 60); text-align: center; letter-spacing: 2px; font-weight: 700; color: oklch(22% 0.02 50); margin-bottom: 10px;" />
+          <div style="font-size: 13px; color: var(--muted); margin-bottom: 14px;">Enter your admin passcode to manage shifts and people.</div>
+          <input type="password" placeholder="Passcode" value="{{ adminCodeValue }}" onChange="{{ onAdminCodeChange }}" style="width: 100%; padding: 13px 14px; font-size: 16px; border-radius: 12px; border: 2px solid var(--border); text-align: center; letter-spacing: 2px; font-weight: 700; color: var(--text); margin-bottom: 10px;" />
           <sc-if value="{{ adminCodeError }}" hint-placeholder-val="{{ false }}">
-            <div style="color: oklch(55% 0.16 25); font-size: 13px; font-weight: 700; margin-bottom: 10px;">That passcode isn't right.</div>
+            <div style="color: var(--danger); font-size: 13px; font-weight: 700; margin-bottom: 10px;">That passcode isn't right.</div>
           </sc-if>
           <div style="display: flex; gap: 10px;">
-            <button onClick="{{ onCloseAdminPrompt }}" style="flex: 1; padding: 13px; font-size: 14px; font-weight: 700; border-radius: 12px; border: 2px solid oklch(88% 0.015 60); background: white; cursor: pointer;">Cancel</button>
+            <button onClick="{{ onCloseAdminPrompt }}" style="flex: 1; padding: 13px; font-size: 14px; font-weight: 700; border-radius: 12px; border: 2px solid var(--border); background: var(--card-bg); cursor: pointer;">Cancel</button>
             <button onClick="{{ onSubmitAdminCode }}" style="flex: 2; padding: 13px; font-size: 14px; font-weight: 700; color: white; background: oklch(58% 0.15 35); border: none; border-radius: 12px; cursor: pointer;">Sign in</button>
           </div>
         </div>
@@ -570,13 +697,13 @@
 
     <sc-if value="{{ authStepIsForceChange }}" hint-placeholder-val="{{ false }}">
       <div style="position: absolute; inset: 0; background: oklch(20% 0.02 50 / 0.45); display: flex; align-items: center; justify-content: center; z-index: 20; padding: 24px;">
-        <div style="background: white; border-radius: 18px; padding: 24px; width: 100%;">
+        <div style="background: var(--card-bg); border-radius: 18px; padding: 24px; width: 100%;">
           <div style="font-weight: 800; font-size: 16px; margin-bottom: 4px;">Create your own passcode</div>
-          <div style="font-size: 13px; color: oklch(48% 0.02 60); margin-bottom: 14px;">{{ forceChangeDescription }}</div>
-          <input type="password" placeholder="New passcode" value="{{ newCodeValue }}" onChange="{{ onNewCodeChange }}" style="width: 100%; padding: 13px 14px; font-size: 16px; border-radius: 12px; border: 2px solid oklch(88% 0.015 60); text-align: center; letter-spacing: 2px; font-weight: 700; color: oklch(22% 0.02 50); margin-bottom: 10px;" />
-          <input type="password" placeholder="Confirm passcode" value="{{ newCodeConfirm }}" onChange="{{ onNewCodeConfirmChange }}" style="width: 100%; padding: 13px 14px; font-size: 16px; border-radius: 12px; border: 2px solid oklch(88% 0.015 60); text-align: center; letter-spacing: 2px; font-weight: 700; color: oklch(22% 0.02 50); margin-bottom: 10px;" />
+          <div style="font-size: 13px; color: var(--muted); margin-bottom: 14px;">{{ forceChangeDescription }}</div>
+          <input type="password" placeholder="New passcode" value="{{ newCodeValue }}" onChange="{{ onNewCodeChange }}" style="width: 100%; padding: 13px 14px; font-size: 16px; border-radius: 12px; border: 2px solid var(--border); text-align: center; letter-spacing: 2px; font-weight: 700; color: var(--text); margin-bottom: 10px;" />
+          <input type="password" placeholder="Confirm passcode" value="{{ newCodeConfirm }}" onChange="{{ onNewCodeConfirmChange }}" style="width: 100%; padding: 13px 14px; font-size: 16px; border-radius: 12px; border: 2px solid var(--border); text-align: center; letter-spacing: 2px; font-weight: 700; color: var(--text); margin-bottom: 10px;" />
           <sc-if value="{{ newCodeError }}" hint-placeholder-val="{{ false }}">
-            <div style="color: oklch(55% 0.16 25); font-size: 13px; font-weight: 700; margin-bottom: 10px;">{{ newCodeError }}</div>
+            <div style="color: var(--danger); font-size: 13px; font-weight: 700; margin-bottom: 10px;">{{ newCodeError }}</div>
           </sc-if>
           <button onClick="{{ onSubmitNewCode }}" style="width: 100%; padding: 14px; font-size: 14px; font-weight: 700; color: white; background: oklch(58% 0.15 35); border: none; border-radius: 12px; cursor: pointer;">Save passcode</button>
         </div>
@@ -585,10 +712,10 @@
 
     <sc-if value="{{ authStepIsSetupProfile }}" hint-placeholder-val="{{ false }}">
       <div style="position: absolute; inset: 0; background: oklch(20% 0.02 50 / 0.45); display: flex; align-items: center; justify-content: center; z-index: 20; padding: 24px;">
-        <div style="background: white; border-radius: 18px; padding: 24px; width: 100%;">
+        <div style="background: var(--card-bg); border-radius: 18px; padding: 24px; width: 100%;">
           <div style="font-weight: 800; font-size: 16px; margin-bottom: 4px;">Set up your profile</div>
-          <div style="font-size: 13px; color: oklch(48% 0.02 60); margin-bottom: 14px;">You're the owner — you'll be the one approving changes from other admins.</div>
-          <input type="text" placeholder="Your name" value="{{ profileNameValue }}" onChange="{{ onProfileNameChange }}" style="width: 100%; padding: 13px 14px; font-size: 15px; border-radius: 12px; border: 2px solid oklch(88% 0.015 60); margin-bottom: 14px; color: oklch(22% 0.02 50);" />
+          <div style="font-size: 13px; color: var(--muted); margin-bottom: 14px;">You're the owner — you'll be the one approving changes from other admins.</div>
+          <input type="text" placeholder="Your name" value="{{ profileNameValue }}" onChange="{{ onProfileNameChange }}" style="width: 100%; padding: 13px 14px; font-size: 15px; border-radius: 12px; border: 2px solid var(--border); margin-bottom: 14px; color: var(--text);" />
           <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 2px; margin-bottom: 18px;">
             <div style="font-weight: 700; font-size: 14px;">I work shifts too</div>
             <div onClick="{{ toggleProfileWorksShifts }}" style="{{ profileWorksShiftsTrackStyle }}">
@@ -611,11 +738,16 @@ const PALETTE = [
   'oklch(58% 0.15 35)', 'oklch(56% 0.09 150)', 'oklch(60% 0.12 90)',
   'oklch(55% 0.13 350)', 'oklch(55% 0.12 260)',
 ];
-const NEUTRAL_BG = 'oklch(95% 0.02 60)';
-const BORDER = 'oklch(88% 0.015 60)';
-const MUTED = 'oklch(48% 0.02 60)';
+const NEUTRAL_BG = 'var(--surface)';
+const BORDER = 'var(--border)';
+const MUTED = 'var(--muted)';
 const TERRACOTTA = 'oklch(58% 0.15 35)';
-const DANGER = 'oklch(55% 0.16 25)';
+const DANGER = 'var(--danger)';
+
+const THEME_VARS = {
+  light: { '--page-bg': 'oklch(93% 0.014 70)', '--card-bg': 'oklch(99% 0.005 70)', '--surface': 'oklch(95% 0.02 60)', '--surface2': 'oklch(97% 0.01 70)', '--border': 'oklch(88% 0.015 60)', '--text': 'oklch(22% 0.02 50)', '--muted': 'oklch(48% 0.02 60)', '--accent-soft': 'oklch(93% 0.05 40)', '--accent-text': 'oklch(45% 0.13 35)', '--danger': 'oklch(55% 0.16 25)' },
+  dark: { '--page-bg': 'oklch(18% 0.02 50)', '--card-bg': 'oklch(24% 0.015 50)', '--surface': 'oklch(30% 0.015 50)', '--surface2': 'oklch(27% 0.015 50)', '--border': 'oklch(38% 0.02 50)', '--text': 'oklch(93% 0.01 60)', '--muted': 'oklch(68% 0.02 60)', '--accent-soft': 'oklch(32% 0.08 35)', '--accent-text': 'oklch(85% 0.1 35)', '--danger': 'oklch(70% 0.16 25)' },
+};
 
 const WEEKDAY_LABELS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -669,11 +801,32 @@ class Component extends DCLogic {
       shiftPresets: [],
       showPresetForm: false, presetFormRowId: null, presetFormLabel: '', presetFormStart: '09:00', presetFormEnd: '17:00', presetFormError: '',
 
+      positionPresets: [],
+      showPositionForm: false, positionFormRowId: null, positionFormLabel: '', positionFormError: '',
+
+      notifyTemplates: {
+        addTitle: 'Schedule added',
+        addMessage: "{name}'s schedule from {range} has been posted",
+        editTitle: 'Schedule updated',
+        editMessage: "{name}'s schedule on {date} has been changed",
+      },
+
       approvalToastText: '',
       pushPermission: 'loading',
       showNotifyPrompt: false, notifyTitle: '', notifyBody: '', notifySendError: '',
+
+      theme: (typeof localStorage !== 'undefined' && localStorage.getItem('shiftSyncTheme')) || 'light',
+      settingsSection: null,
     };
   }
+
+  toggleTheme = () => this.setState(s => {
+    const theme = s.theme === 'dark' ? 'light' : 'dark';
+    try { localStorage.setItem('shiftSyncTheme', theme); } catch (e) {}
+    return { theme };
+  });
+  goSettingsSection = (section) => this.setState({ settingsSection: section });
+  backToSettingsMenu = () => this.setState({ settingsSection: null });
 
   NOTIFY_RELAY_URL = 'https://shift-sync-notify.accounts-558.workers.dev/';
 
@@ -756,6 +909,8 @@ class Component extends DCLogic {
           pendingChanges: data.pendingChanges || [],
           notifPrefs: data.notifPrefs || this.state.notifPrefs,
           shiftPresets: data.shiftPresets || [],
+          positionPresets: data.positionPresets || [],
+          notifyTemplates: data.notifyTemplates || this.state.notifyTemplates,
         });
       }
       this.hasLoadedRemote = true;
@@ -774,8 +929,9 @@ class Component extends DCLogic {
     window.__shiftSyncDb.save({
       people: s.people, shifts: s.shifts, pendingChanges: s.pendingChanges,
       notifPrefs: s.notifPrefs, shiftPresets: s.shiftPresets,
+      positionPresets: s.positionPresets, notifyTemplates: s.notifyTemplates,
     });
-    this.lastSynced = JSON.stringify(['people', 'shifts', 'pendingChanges', 'notifPrefs', 'shiftPresets'].map(k => s[k]));
+    this.lastSynced = JSON.stringify(['people', 'shifts', 'pendingChanges', 'notifPrefs', 'shiftPresets', 'positionPresets', 'notifyTemplates'].map(k => s[k]));
   }
 
   handleResize = () => this.setState({ viewportWidth: window.innerWidth });
@@ -839,7 +995,7 @@ class Component extends DCLogic {
     this.pushToRemote();
   }
   snapshotKeys() {
-    const keys = ['people', 'shifts', 'pendingChanges', 'notifPrefs', 'shiftPresets'];
+    const keys = ['people', 'shifts', 'pendingChanges', 'notifPrefs', 'shiftPresets', 'positionPresets', 'notifyTemplates'];
     return JSON.stringify(keys.map(k => this.state[k]));
   }
 
@@ -873,7 +1029,7 @@ class Component extends DCLogic {
           notes: s.notes,
           hasNotes: !!s.notes,
           canEdit: isAdmin,
-          cardStyle: { background: 'oklch(97% 0.01 70)', borderRadius: '14px', padding: '14px', marginBottom: '10px', borderLeft: `4px solid ${person.color}` },
+          cardStyle: { background: 'var(--surface2)', borderRadius: '14px', padding: '14px', marginBottom: '10px', borderLeft: `4px solid ${person.color}` },
           onEdit: () => this.openEditShift(s.id),
           onDelete: () => this.deleteShift(s.id),
         };
@@ -945,7 +1101,7 @@ class Component extends DCLogic {
     });
   };
 
-  goTab = (tab) => this.setState({ activeTab: tab });
+  goTab = (tab) => this.setState({ activeTab: tab, settingsSection: tab === 'settings' ? null : null });
   setView = (view) => this.setState({ view });
   setPersonFilter = (id) => this.setState({ personFilter: id });
 
@@ -1018,6 +1174,38 @@ class Component extends DCLogic {
   };
   removePreset = (id) => this.setState(s => ({ shiftPresets: s.shiftPresets.filter(p => p.id !== id) }));
 
+  applyPositionTo = (rowId) => (e) => {
+    const val = e.target.value;
+    if (val === '__new__') { this.openPositionForm(rowId); return; }
+    if (rowId === 'single') this.setState({ formRole: val });
+    else this.setState(s => ({ formRows: s.formRows.map(r => r.id === rowId ? { ...r, role: val } : r) }));
+  };
+  openPositionForm = (rowId) => this.setState({ showPositionForm: true, positionFormRowId: rowId, positionFormLabel: '', positionFormError: '' });
+  closePositionForm = () => this.setState({ showPositionForm: false });
+  positionFormLabelChange = (e) => this.setState({ positionFormLabel: e.target.value, positionFormError: '' });
+  savePositionPreset = () => {
+    const label = this.state.positionFormLabel.trim();
+    if (!label) { this.setState({ positionFormError: 'Enter a position name.' }); return; }
+    const rowId = this.state.positionFormRowId;
+    const preset = { id: this.uid('pos'), label };
+    this.setState(s => ({
+      positionPresets: [...s.positionPresets, preset],
+      formRole: rowId === 'single' ? label : s.formRole,
+      formRows: (rowId && rowId !== 'single') ? s.formRows.map(r => r.id === rowId ? { ...r, role: label } : r) : s.formRows,
+      showPositionForm: false,
+    }));
+  };
+  removePositionPreset = (id) => this.setState(s => ({ positionPresets: s.positionPresets.filter(p => p.id !== id) }));
+
+  niceDate(iso) { const d = this.parseIso(iso); return `${MONTH_NAMES[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`; }
+  niceDateRange(datesSorted) {
+    if (datesSorted.length === 1) return this.niceDate(datesSorted[0]);
+    return `${this.niceDate(datesSorted[0])} – ${this.niceDate(datesSorted[datesSorted.length - 1])}`;
+  }
+  fillTemplate(tmpl, vals) { return Object.keys(vals).reduce((str, k) => str.split(`{${k}}`).join(vals[k]), tmpl); }
+
+  notifyTemplateChange = (key) => (e) => this.setState(s => ({ notifyTemplates: { ...s.notifyTemplates, [key]: e.target.value } }));
+
   flashToast(text) {
     this.setState({ approvalToastText: text });
     setTimeout(() => this.setState(s => (s.approvalToastText === text ? { approvalToastText: '' } : {})), 2500);
@@ -1041,7 +1229,11 @@ class Component extends DCLogic {
           return { shifts: next.shifts, showShiftForm: false, view: 'day', selectedDay: payload.date };
         });
         const personName = this.personById(formPersonId).name;
-        this.promptNotify('Schedule updated', `${personName}'s shift on ${payload.date} was changed.`);
+        const tmpl = this.state.notifyTemplates;
+        this.promptNotify(
+          tmpl.editTitle || 'Schedule updated',
+          this.fillTemplate(tmpl.editMessage || "{name}'s schedule on {date} has been changed", { name: personName, date: this.niceDate(payload.date) })
+        );
       } else {
         const admin = this.currentAdmin();
         const personName = this.personById(formPersonId).name;
@@ -1065,7 +1257,11 @@ class Component extends DCLogic {
         return { shifts: next.shifts, showShiftForm: false, view: 'day', selectedDay: sortedDates[0] };
       });
       const personName = this.personById(formPersonId).name;
-      this.promptNotify('Schedule updated', payloads.length > 1 ? `${personName} added ${payloads.length} new shifts.` : `${personName} was added to the schedule on ${sortedDates[0]}.`);
+      const tmpl = this.state.notifyTemplates;
+      this.promptNotify(
+        tmpl.addTitle || 'Schedule added',
+        this.fillTemplate(tmpl.addMessage || "{name}'s schedule from {range} has been posted", { name: personName, range: this.niceDateRange(sortedDates) })
+      );
     } else {
       const admin = this.currentAdmin();
       const personName = this.personById(formPersonId).name;
@@ -1156,7 +1352,7 @@ class Component extends DCLogic {
 
   buildToggleStyles(checked) {
     return {
-      track: { width: '44px', height: '26px', borderRadius: '13px', background: checked ? TERRACOTTA : 'oklch(85% 0.01 60)', position: 'relative', cursor: 'pointer', flexShrink: 0, transition: 'background 0.15s' },
+      track: { width: '44px', height: '26px', borderRadius: '13px', background: checked ? TERRACOTTA : 'var(--border)', position: 'relative', cursor: 'pointer', flexShrink: 0, transition: 'background 0.15s' },
       thumb: { position: 'absolute', top: '2px', left: checked ? '20px' : '2px', width: '22px', height: '22px', borderRadius: '50%', background: 'white', transition: 'left 0.15s', boxShadow: '0 1px 3px rgba(0,0,0,0.25)' },
     };
   }
@@ -1171,18 +1367,19 @@ class Component extends DCLogic {
     const cardStyle = {
       width: '100%',
       maxWidth: isDesktop ? '1040px' : isTablet ? '700px' : '430px',
-      background: 'oklch(99% 0.005 70)', borderRadius: '28px',
+      background: 'var(--card-bg)', color: 'var(--text)', borderRadius: '28px',
       boxShadow: '0 20px 50px -20px oklch(30% 0.03 50 / 0.35)', overflow: 'hidden',
       display: 'flex', flexDirection: 'column',
       minHeight: isMobile ? '780px' : '640px',
       maxHeight: isMobile ? undefined : '92vh',
       position: 'relative',
     };
+    const themeStyle = { minHeight: '100vh', width: '100%', background: 'var(--page-bg)', display: 'flex', justifyContent: 'center', padding: '28px 12px', color: 'var(--text)', ...THEME_VARS[s.theme] };
     const sheetOverlayStyle = { position: 'absolute', inset: 0, background: 'oklch(20% 0.02 50 / 0.45)', display: 'flex', alignItems: isMobile ? 'flex-end' : 'center', justifyContent: 'center', zIndex: 10, padding: isMobile ? 0 : '24px' };
-    const sheetPanelStyle = { background: 'white', width: '100%', maxWidth: isMobile ? undefined : '440px', borderRadius: isMobile ? '22px 22px 0 0' : '18px', padding: '22px 22px 26px', maxHeight: isMobile ? '88%' : '85vh', overflowY: 'auto' };
-    const sheetPanelStyleAuto = { background: 'white', width: '100%', maxWidth: isMobile ? undefined : '440px', borderRadius: isMobile ? '22px 22px 0 0' : '18px', padding: '22px 22px 26px', maxHeight: isMobile ? undefined : '85vh', overflowY: isMobile ? undefined : 'auto' };
+    const sheetPanelStyle = { background: 'var(--card-bg)', color: 'var(--text)', width: '100%', maxWidth: isMobile ? undefined : '440px', borderRadius: isMobile ? '22px 22px 0 0' : '18px', padding: '22px 22px 26px', maxHeight: isMobile ? '88%' : '85vh', overflowY: 'auto' };
+    const sheetPanelStyleAuto = { background: 'var(--card-bg)', color: 'var(--text)', width: '100%', maxWidth: isMobile ? undefined : '440px', borderRadius: isMobile ? '22px 22px 0 0' : '18px', padding: '22px 22px 26px', maxHeight: isMobile ? undefined : '85vh', overflowY: isMobile ? undefined : 'auto' };
     const weekGridStyle = isMobile ? {} : { display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '10px', alignItems: 'start' };
-    const weekColumnStyle = isMobile ? { marginBottom: '16px' } : { marginBottom: 0, background: 'oklch(97% 0.01 70)', borderRadius: '12px', padding: '10px' };
+    const weekColumnStyle = isMobile ? { marginBottom: '16px' } : { marginBottom: 0, background: 'var(--surface2)', borderRadius: '12px', padding: '10px' };
 
     const isAdmin = !!s.currentAdminId;
     const isPrimary = this.isPrimaryCurrent();
@@ -1191,14 +1388,14 @@ class Component extends DCLogic {
     const shiftPeople = s.people.filter(p => p.canHaveShifts);
 
     const tabBtn = (active) => ({ flex: 1, padding: '14px', textAlign: 'center', border: 'none', background: 'none', cursor: 'pointer', fontSize: '13px', fontWeight: active ? '800' : '600', color: active ? TERRACOTTA : MUTED, borderTop: active ? `2px solid ${TERRACOTTA}` : '2px solid transparent' });
-    const segBtn = (active) => ({ flex: 1, padding: '9px', border: 'none', borderRadius: '9px', cursor: 'pointer', fontSize: '13px', fontWeight: '700', background: active ? 'white' : 'transparent', color: active ? TERRACOTTA : MUTED, boxShadow: active ? '0 1px 4px rgba(0,0,0,0.1)' : 'none' });
+    const segBtn = (active) => ({ flex: 1, padding: '9px', border: 'none', borderRadius: '9px', cursor: 'pointer', fontSize: '13px', fontWeight: '700', background: active ? 'var(--card-bg)' : 'transparent', color: active ? TERRACOTTA : MUTED, boxShadow: active ? '0 1px 4px rgba(0,0,0,0.1)' : 'none' });
 
     const personChips = [{ id: 'all', label: 'Everyone', showDot: false, color: null }]
       .concat(shiftPeople.map(p => ({ id: p.id, label: p.name, showDot: true, color: p.color })))
       .map(c => ({
         ...c,
         onClick: () => this.setPersonFilter(c.id),
-        style: { display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '999px', cursor: 'pointer', fontSize: '13px', fontWeight: '700', border: `2px solid ${s.personFilter === c.id ? TERRACOTTA : BORDER}`, background: s.personFilter === c.id ? 'oklch(93% 0.05 40)' : 'white', color: s.personFilter === c.id ? TERRACOTTA : MUTED },
+        style: { display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '999px', cursor: 'pointer', fontSize: '13px', fontWeight: '700', border: `2px solid ${s.personFilter === c.id ? TERRACOTTA : BORDER}`, background: s.personFilter === c.id ? 'var(--accent-soft)' : 'var(--card-bg)', color: s.personFilter === c.id ? TERRACOTTA : MUTED },
         dotStyle: { width: '8px', height: '8px', borderRadius: '50%', background: c.color, display: 'inline-block' },
       }));
 
@@ -1234,7 +1431,7 @@ class Component extends DCLogic {
           iso, dayNum: cursor.getDate(),
           dotColors: colors.map(c => ({ style: { width: '5px', height: '5px', borderRadius: '50%', background: c, display: 'inline-block' } })),
           onClick: () => this.selectMonthDay(iso),
-          style: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', aspectRatio: '1', borderRadius: '10px', cursor: 'pointer', fontSize: '13px', fontWeight: isToday ? '800' : '600', background: isSelected ? 'oklch(93% 0.05 40)' : 'transparent', border: isToday ? `2px solid ${TERRACOTTA}` : '2px solid transparent', color: inMonth ? (isToday ? TERRACOTTA : 'oklch(22% 0.02 50)') : 'oklch(75% 0.01 60)' },
+          style: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', aspectRatio: '1', borderRadius: '10px', cursor: 'pointer', fontSize: '13px', fontWeight: isToday ? '800' : '600', background: isSelected ? 'var(--accent-soft)' : 'transparent', border: isToday ? `2px solid ${TERRACOTTA}` : '2px solid transparent', color: inMonth ? (isToday ? TERRACOTTA : 'var(--text)') : 'var(--muted)' },
         });
         cursor = this.addDays(cursor, 1);
       }
@@ -1263,7 +1460,7 @@ class Component extends DCLogic {
     const notifItems = notifDefs.map(n => { const checked = s.notifPrefs[n.key]; const st = this.buildToggleStyles(checked); return { ...n, onToggle: () => this.toggleNotif(n.key), trackStyle: st.track, thumbStyle: st.thumb }; });
 
     const formPersonOptions = shiftPeople.map(p => ({ id: p.id, name: p.name, onClick: () => this.setFormPerson(p.id),
-      style: { flex: '1 0 auto', padding: '10px 14px', borderRadius: '10px', cursor: 'pointer', fontSize: '13px', fontWeight: '700', border: `2px solid ${s.formPersonId === p.id ? p.color : BORDER}`, background: s.formPersonId === p.id ? 'oklch(93% 0.05 40)' : 'white', color: s.formPersonId === p.id ? p.color : 'inherit' } }));
+      style: { flex: '1 0 auto', padding: '10px 14px', borderRadius: '10px', cursor: 'pointer', fontSize: '13px', fontWeight: '700', border: `2px solid ${s.formPersonId === p.id ? p.color : BORDER}`, background: s.formPersonId === p.id ? 'var(--accent-soft)' : 'var(--card-bg)', color: s.formPersonId === p.id ? p.color : 'inherit' } }));
 
     const profileToggle = this.buildToggleStyles(s.profileWorksShifts);
     const personShiftToggle = this.buildToggleStyles(s.personFormCanShift);
@@ -1271,6 +1468,10 @@ class Component extends DCLogic {
     const presetSelectOptions = [{ value: '', label: 'Custom time…' }]
       .concat(s.shiftPresets.map(p => ({ value: p.id, label: p.label })))
       .concat([{ value: '__new__', label: '+ Add new shift time…' }]);
+
+    const positionSelectOptions = [{ value: '', label: 'Choose a position…' }]
+      .concat(s.positionPresets.map(p => ({ value: p.label, label: p.label })))
+      .concat([{ value: '__new__', label: '+ Add new position…' }]);
 
     const formRows = s.formRows.map((r, idx) => {
       const isExpanded = s.expandedRowId === r.id || s.formRows.length === 1;
@@ -1299,8 +1500,10 @@ class Component extends DCLogic {
         onRoleChange: this.rowFieldChange(r.id, 'role'),
         onNotesChange: this.rowFieldChange(r.id, 'notes'),
         onPresetChange: this.applyPresetToRow(r.id),
+        onPositionChange: this.applyPositionTo(r.id),
         onRemove: (e) => { e.stopPropagation(); this.removeFormRow(r.id); },
         presetOptions: presetSelectOptions,
+        positionOptions: positionSelectOptions,
       };
     });
     const saveShiftBatchLabel = isPrimary
@@ -1308,10 +1511,11 @@ class Component extends DCLogic {
       : (formRows.length > 1 ? `Submit ${formRows.length} for approval` : 'Submit for approval');
 
     return {
-      cardStyle, sheetOverlayStyle, sheetPanelStyle, sheetPanelStyleAuto, weekGridStyle,
+      cardStyle, themeStyle, sheetOverlayStyle, sheetPanelStyle, sheetPanelStyleAuto, weekGridStyle,
+      theme: s.theme, isDarkTheme: s.theme === 'dark', onToggleTheme: this.toggleTheme,
       showAdminSignIn: !isAdmin,
       roleLabel: isAdmin ? (isPrimary ? 'Admin' : `Admin — ${this.currentAdmin().name}`) : 'Viewer',
-      roleBadgeStyle: { fontSize: '11px', fontWeight: '800', padding: '5px 10px', borderRadius: '999px', background: isAdmin ? 'oklch(93% 0.05 40)' : NEUTRAL_BG, color: isAdmin ? TERRACOTTA : MUTED },
+      roleBadgeStyle: { fontSize: '11px', fontWeight: '800', padding: '5px 10px', borderRadius: '999px', background: isAdmin ? 'var(--accent-soft)' : NEUTRAL_BG, color: isAdmin ? TERRACOTTA : MUTED },
       isAdmin,
 
       showApprovalToast: !!s.approvalToastText,
@@ -1361,6 +1565,37 @@ class Component extends DCLogic {
       onLogout: this.logout,
       noPresets: s.shiftPresets.length === 0,
       presetList: s.shiftPresets.map(p => ({ ...p, onRemove: () => this.removePreset(p.id) })),
+      noPositionPresets: s.positionPresets.length === 0,
+      positionPresetList: s.positionPresets.map(p => ({ ...p, onRemove: () => this.removePositionPreset(p.id) })),
+
+      notifyAddTitle: s.notifyTemplates.addTitle, onNotifyAddTitleChange: this.notifyTemplateChange('addTitle'),
+      notifyAddMessage: s.notifyTemplates.addMessage, onNotifyAddMessageChange: this.notifyTemplateChange('addMessage'),
+      notifyEditTitle: s.notifyTemplates.editTitle, onNotifyEditTitleChange: this.notifyTemplateChange('editTitle'),
+      notifyEditMessage: s.notifyTemplates.editMessage, onNotifyEditMessageChange: this.notifyTemplateChange('editMessage'),
+
+      showPositionForm: s.showPositionForm,
+      positionFormLabel: s.positionFormLabel, onPositionFormLabelChange: this.positionFormLabelChange,
+      positionFormError: s.positionFormError,
+      closePositionForm: this.closePositionForm, savePositionPreset: this.savePositionPreset,
+
+      settingsIsMenu: !s.settingsSection,
+      settingsIsPush: s.settingsSection === 'push',
+      settingsIsNotify: s.settingsSection === 'notify',
+      settingsIsAppearance: s.settingsSection === 'appearance',
+      settingsIsPasscode: s.settingsSection === 'passcode',
+      settingsIsPresets: s.settingsSection === 'presets',
+      settingsIsPositions: s.settingsSection === 'positions',
+      settingsIsWording: s.settingsSection === 'wording',
+      goSettingsPush: () => this.goSettingsSection('push'),
+      goSettingsNotify: () => this.goSettingsSection('notify'),
+      goSettingsAppearance: () => this.goSettingsSection('appearance'),
+      goSettingsPasscode: () => this.goSettingsSection('passcode'),
+      goSettingsPresets: () => this.goSettingsSection('presets'),
+      goSettingsPositions: () => this.goSettingsSection('positions'),
+      goSettingsWording: () => this.goSettingsSection('wording'),
+      backToSettingsMenu: this.backToSettingsMenu,
+      themeToggleTrackStyle: this.buildToggleStyles(s.theme === 'dark').track,
+      themeToggleThumbStyle: this.buildToggleStyles(s.theme === 'dark').thumb,
       selfCodeValue: s.selfCodeValue, onSelfCodeChange: this.selfCodeChange,
       selfCodeConfirm: s.selfCodeConfirm, onSelfCodeConfirmChange: this.selfCodeConfirmChange,
       selfCodeError: s.selfCodeError, selfCodeSaved: s.selfCodeSaved,
@@ -1388,6 +1623,8 @@ class Component extends DCLogic {
       formStart: s.formStart, onFormStartChange: this.formStartChange,
       formEnd: s.formEnd, onFormEndChange: this.formEndChange,
       formRole: s.formRole, onFormRoleChange: this.formRoleChange,
+      onFormPositionChange: this.applyPositionTo('single'),
+      positionSelectOptions,
       formNotes: s.formNotes, onFormNotesChange: this.formNotesChange,
       closeForm: this.closeForm, saveShift: this.saveShift, deleteShiftFromForm: this.deleteShiftFromForm,
       formRows, addFormRow: this.addFormRow,
